@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="referrer" content="no-referrer-when-downgrade" />
-    
     <title>VΞLΘX | THE REAL PROTOCOL</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Cairo:wght@200;700&display=swap');
         :root { --neon: #bf00ff; --cyan: #00f3ff; --deep-purple: #070113; }
@@ -25,7 +26,6 @@
         .video-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* الهيدر الاحترافي */
         .top-hud {
             position: absolute; top: 0; left: 0; width: 100%; padding: 25px;
             background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
@@ -35,11 +35,9 @@
         .brand-logo { font-family: 'Orbitron'; font-weight: 900; font-size: 26px; letter-spacing: 4px; color: #fff; text-shadow: 0 0 15px var(--neon); }
         .user-status { font-family: 'Orbitron'; font-size: 10px; color: var(--cyan); letter-spacing: 1px; background: rgba(0,243,255,0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--cyan); }
 
-        /* شريط التقدم */
         .system-progress { width: 40%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; }
         .progress-active { width: 75%; height: 100%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); transition: 0.5s; }
 
-        /* العلامة المائية الملونة */
         .v-watermark {
             position: absolute; top: 50%; right: 20px; transform: translateY(-50%);
             writing-mode: vertical-rl; font-family: 'Orbitron'; font-weight: 900;
@@ -47,7 +45,6 @@
             background: linear-gradient(to bottom, #fff, var(--neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* أزرار التفاعل الحقيقية (بدون إعلانات) */
         .side-interface { position: absolute; left: 20px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
         .interaction-node { 
             display: flex; flex-direction: column; align-items: center; gap: 5px;
@@ -61,7 +58,6 @@
         .interaction-node:active .node-circle { transform: scale(0.9); border-color: var(--cyan); }
         .node-text { font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.6); font-family: 'Orbitron'; }
 
-        /* الناف بار السفلي */
         .dock-bar {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 420px; height: 75px;
@@ -76,7 +72,6 @@
             border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
 
-        /* واجهة الدردشة */
         #chat-layer { position: fixed; inset: 0; background: rgba(7,1,19,0.99); z-index: 2000; display: none; padding: 35px; border-left: 1px solid var(--neon); }
     </style>
 </head>
@@ -110,7 +105,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // جلب البيانات وبناء الفيديوهات
         db.ref('videos').on('value', snap => {
             const feed = document.getElementById('main-feed');
             const data = snap.val(); if(!data) return;
@@ -151,17 +145,14 @@
             initObserver();
         });
 
-        // وظيفة الإعجاب الحقيقية (بدون إعلانات)
         function likeVideo(id) {
             const likeRef = db.ref(`videos/${id}/likes`);
             likeRef.transaction(current => (current || 0) + 1);
-            // إضافة تأثير بصري
             const btn = document.querySelector(`[onclick="likeVideo('${id}')"] .node-circle`);
             btn.style.borderColor = "#00f3ff";
             btn.style.boxShadow = "0 0 20px #00f3ff";
         }
 
-        // وظيفة المشاركة الحقيقية
         function shareVideo(url) {
             if (navigator.share) {
                 navigator.share({ title: 'VΞLΘX Video', url: url });
