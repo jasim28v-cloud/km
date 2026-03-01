@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VΞLΘX | SHADOW OS</title>
+    <title>VΞLΘX | THE REAL PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -11,156 +11,185 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Cairo:wght@200;700&display=swap');
-        :root { --neon: #bf00ff; --cyan: #00f3ff; --deep-purple: #0a0118; }
+        :root { --neon: #bf00ff; --cyan: #00f3ff; --deep-purple: #070113; }
         
         body { margin: 0; background: var(--deep-purple); color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; height: 100vh; }
         
-        /* نظام التمرير تيك توك */
         .v-scroller { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .v-scroller::-webkit-scrollbar { display: none; }
         
         .v-frame { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }
         
-        /* إطار الفيديو المتوهج */
-        .video-wrapper {
-            position: relative; width: 100%; height: 100%;
-            overflow: hidden; transition: 0.5s;
-        }
-        .v-frame.active .video-wrapper { box-shadow: inset 0 0 100px rgba(191, 0, 255, 0.2); }
-
+        .video-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* الهيدر العلوي - تطابق مع الصورة */
+        /* الهيدر الاحترافي */
         .top-hud {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 20px;
-            background:展示 linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-            z-index: 100; display: flex; justify-content: space-between; align-items: center;
+            position: absolute; top: 0; left: 0; width: 100%; padding: 25px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+            z-index: 100; display: flex; flex-direction: column; gap: 8px;
         }
-        .brand-logo { font-family: 'Orbitron'; font-weight: 900; font-size: 22px; letter-spacing: 3px; color: #fff; font-style: italic; }
-        .level-tag { font-family: 'Orbitron'; font-size: 10px; color: var(--cyan); border: 1px solid var(--cyan); padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+        .brand-box { display: flex; justify-content: space-between; align-items: center; }
+        .brand-logo { font-family: 'Orbitron'; font-weight: 900; font-size: 26px; letter-spacing: 4px; color: #fff; text-shadow: 0 0 15px var(--neon); }
+        .user-status { font-family: 'Orbitron'; font-size: 10px; color: var(--cyan); letter-spacing: 1px; background: rgba(0,243,255,0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--cyan); }
 
-        /* شريط التقدم العلوي */
-        .progress-bar { position: absolute; top: 55px; left: 10%; width: 30%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-        .progress-fill { width: 60%; height: 100%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+        /* شريط التقدم */
+        .system-progress { width: 40%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; }
+        .progress-active { width: 75%; height: 100%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); transition: 0.5s; }
 
         /* العلامة المائية الملونة */
-        .watermark {
-            position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%);
-            z-index: 20; font-family: 'Orbitron'; font-weight: 900; font-size: 18px;
-            background: linear-gradient(90deg, #fff, var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            opacity: 0.5; pointer-events: none;
+        .v-watermark {
+            position: absolute; top: 50%; right: 20px; transform: translateY(-50%);
+            writing-mode: vertical-rl; font-family: 'Orbitron'; font-weight: 900;
+            font-size: 20px; letter-spacing: 10px; opacity: 0.2; pointer-events: none;
+            background: linear-gradient(to bottom, #fff, var(--neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* الأزرار الجانبية الشفافة - كما في الصورة */
-        .side-actions { position: absolute; left: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
-        .action-btn { 
-            width: 50px; height: 50px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
+        /* أزرار التفاعل الحقيقية (بدون إعلانات) */
+        .side-interface { position: absolute; left: 20px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .interaction-node { 
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            cursor: pointer; transition: 0.3s;
         }
-        .action-btn i { font-size: 20px; margin-bottom: 2px; }
-        .action-label { font-size: 8px; font-weight: bold; text-transform: uppercase; }
+        .node-circle { 
+            width: 55px; height: 55px; background: rgba(255,255,255,0.08); backdrop-filter: blur(15px);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1); font-size: 22px;
+        }
+        .interaction-node:active .node-circle { transform: scale(0.9); border-color: var(--cyan); }
+        .node-text { font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.6); font-family: 'Orbitron'; }
 
-        /* ناف بار سفلي احترافي */
-        .bottom-dock {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; height: 70px;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
-            border-radius: 25px; border: 1px solid rgba(255,255,255,0.1);
+        /* الناف بار السفلي */
+        .dock-bar {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 420px; height: 75px;
+            background: rgba(10,1,24,0.85); backdrop-filter: blur(25px);
+            border-radius: 30px; border: 1px solid rgba(191,0,255,0.2);
             display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
-        .dock-item { color: rgba(255,255,255,0.4); font-size: 20px; cursor: pointer; transition: 0.3s; }
-        .dock-item.active { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
-        .main-add { 
-            width: 55px; height: 45px; background: #fff; color: #000; 
-            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+        .dock-icon { font-size: 22px; color: rgba(255,255,255,0.3); transition: 0.3s; cursor: pointer; }
+        .dock-icon.active { color: var(--neon); text-shadow: 0 0 15px var(--neon); }
+        .center-portal { 
+            width: 60px; height: 45px; background: #fff; color: #000; 
+            border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
 
-        #comment-vortex { position: fixed; inset: 0; background: rgba(10,1,24,0.98); z-index: 2000; display: none; padding: 30px; }
+        /* واجهة الدردشة */
+        #chat-layer { position: fixed; inset: 0; background: rgba(7,1,19,0.99); z-index: 2000; display: none; padding: 35px; border-left: 1px solid var(--neon); }
     </style>
 </head>
 <body>
 
-    <main class="v-scroller" id="v-feed"></main>
+    <main class="v-scroller" id="main-feed"></main>
 
-    <nav class="bottom-dock">
-        <i class="fas fa-home dock-item active"></i>
-        <i class="fas fa-share-alt dock-item"></i>
-        <div class="main-add" id="upload-trigger"><i class="fas fa-plus"></i></div>
-        <i class="fas fa-comment-dots dock-item"></i>
-        <i class="fas fa-th-large dock-item"></i>
+    <nav class="dock-bar">
+        <i class="fas fa-home dock-icon active"></i>
+        <i class="fas fa-compass dock-icon"></i>
+        <div class="center-portal" id="upload-btn"><i class="fas fa-plus"></i></div>
+        <i class="fas fa-comment-alt dock-icon" onclick="toggleChat(true)"></i>
+        <i class="fas fa-user-circle dock-icon"></i>
     </nav>
 
-    <div id="comment-vortex" class="flex flex-col">
-        <div class="flex justify-between items-center mb-8"><h2 class="font-black text-xl font-[Orbitron]">NEURAL CHAT</h2><i class="fas fa-times text-2xl" onclick="toggleChat(false)"></i></div>
-        <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2"></div>
-        <div class="flex gap-2 p-2 bg-white/5 rounded-2xl border border-white/10">
-            <input type="text" id="chat-input" class="flex-1 bg-transparent outline-none p-2" placeholder="Send signal...">
-            <button onclick="sendChat()" class="px-6 py-2 bg-white text-black font-bold rounded-xl">PUSH</button>
+    <div id="chat-layer" class="flex flex-col">
+        <div class="flex justify-between items-center mb-8"><h2 class="font-black text-2xl font-[Orbitron] text-[var(--cyan)]">NEURAL_FEED</h2><i class="fas fa-chevron-left text-3xl" onclick="toggleChat(false)"></i></div>
+        <div id="chat-display" class="flex-1 overflow-y-auto space-y-4 mb-6 pr-2"></div>
+        <div class="flex gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
+            <input type="text" id="chat-input" class="flex-1 bg-transparent outline-none" placeholder="Transmit signal...">
+            <button onclick="pushMsg()" class="px-8 py-3 bg-[var(--neon)] text-white font-bold rounded-xl">SEND</button>
         </div>
     </div>
 
     <script>
-        const NODE_ID = localStorage.getItem('vx_os_id') || 'PHANTOM-' + Math.random().toString(36).substr(2, 4).toUpperCase();
-        localStorage.setItem('vx_os_id', NODE_ID);
-        let activeVideo = null;
+        const USER_TAG = localStorage.getItem('velox_user') || 'MEMBER_' + Math.random().toString(36).substr(2, 4).toUpperCase();
+        localStorage.setItem('velox_user', USER_TAG);
+        let currentVideoID = null;
 
         const firebaseConfig = { databaseURL: "https://forg-c693e-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function adFlow() { window.open("https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c", '_blank'); }
-
-        db.ref('videos').on('value', s => {
-            const feed = document.getElementById('v-feed');
-            const data = s.val(); if(!data) return;
+        // جلب البيانات وبناء الفيديوهات
+        db.ref('videos').on('value', snap => {
+            const feed = document.getElementById('main-feed');
+            const data = snap.val(); if(!data) return;
             feed.innerHTML = '';
             Object.keys(data).reverse().forEach(id => {
-                const sec = document.createElement('section');
-                sec.className = 'v-frame';
-                sec.dataset.id = id;
-                sec.innerHTML = `
+                const section = document.createElement('section');
+                section.className = 'v-frame';
+                section.dataset.id = id;
+                section.innerHTML = `
                     <div class="top-hud">
-                        <div class="brand-logo">SHADØW</div>
-                        <div class="level-tag">Level 34 (SHADOW_LORD)</div>
-                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <div class="brand-box">
+                            <div class="brand-logo">VΞLΘX</div>
+                            <div class="user-status">ACTIVE_MEMBER // LVL.1</div>
+                        </div>
+                        <div class="system-progress"><div class="progress-active"></div></div>
                     </div>
                     <div class="video-wrapper">
-                        <div class="watermark">VΞLΘX</div>
+                        <div class="v-watermark">VΞLΘX_PROTOCOL</div>
                         <video loop playsinline src="${data[id].url}"></video>
                     </div>
-                    <div class="side-actions">
-                        <div class="action-btn" onclick="adFlow()"><i class="fas fa-heart"></i><span class="action-label">0</span></div>
-                        <div class="action-btn" onclick="toggleChat(true)"><i class="fas fa-comment"></i><span class="action-label">TALK</span></div>
-                        <div class="action-btn" onclick="adFlow()"><i class="fas fa-share"></i></div>
+                    <div class="side-interface">
+                        <div class="interaction-node" onclick="likeVideo('${id}')">
+                            <div class="node-circle"><i class="fas fa-heart text-red-500"></i></div>
+                            <span class="node-text" id="likes-${id}">${data[id].likes || 0}</span>
+                        </div>
+                        <div class="interaction-node" onclick="toggleChat(true)">
+                            <div class="node-circle"><i class="fas fa-comment-dots text-[var(--cyan)]"></i></div>
+                            <span class="node-text">CHAT</span>
+                        </div>
+                        <div class="interaction-node" onclick="shareVideo('${data[id].url}')">
+                            <div class="node-circle"><i class="fas fa-share-alt"></i></div>
+                            <span class="node-text">PUSH</span>
+                        </div>
                     </div>
                 `;
-                feed.appendChild(sec);
+                feed.appendChild(section);
             });
-            initOS();
+            initObserver();
         });
 
+        // وظيفة الإعجاب الحقيقية (بدون إعلانات)
+        function likeVideo(id) {
+            const likeRef = db.ref(`videos/${id}/likes`);
+            likeRef.transaction(current => (current || 0) + 1);
+            // إضافة تأثير بصري
+            const btn = document.querySelector(`[onclick="likeVideo('${id}')"] .node-circle`);
+            btn.style.borderColor = "#00f3ff";
+            btn.style.boxShadow = "0 0 20px #00f3ff";
+        }
+
+        // وظيفة المشاركة الحقيقية
+        function shareVideo(url) {
+            if (navigator.share) {
+                navigator.share({ title: 'VΞLΘX Video', url: url });
+            } else {
+                alert("تم نسخ رابط الفيديو!");
+                navigator.clipboard.writeText(url);
+            }
+        }
+
         function toggleChat(s) {
-            document.getElementById('comment-vortex').style.display = s ? 'flex' : 'none';
+            document.getElementById('chat-layer').style.display = s ? 'flex' : 'none';
             if(s) loadChat();
         }
 
-        function sendChat() {
+        function pushMsg() {
             const i = document.getElementById('chat-input');
-            if(i.value.trim() && activeVideo) {
-                db.ref(`comments/${activeVideo}`).push({ u: NODE_ID, m: i.value });
+            if(i.value.trim() && currentVideoID) {
+                db.ref(`comments/${currentVideoID}`).push({ u: USER_TAG, m: i.value });
                 i.value = '';
             }
         }
 
         function loadChat() {
-            db.ref(`comments/${activeVideo}`).on('value', s => {
-                const box = document.getElementById('chat-box'); box.innerHTML = '';
+            db.ref(`comments/${currentVideoID}`).on('value', s => {
+                const box = document.getElementById('chat-display'); box.innerHTML = '';
                 const d = s.val();
                 if(d) Object.values(d).forEach(x => {
                     const div = document.createElement('div');
-                    div.className = 'p-3 bg-white/5 rounded-xl border-l-2 border-[var(--cyan)]';
-                    div.innerHTML = `<span class="text-[9px] text-[var(--cyan)] font-bold">${x.u}</span><p class="text-sm">${x.m}</p>`;
+                    div.className = 'p-4 bg-white/5 rounded-2xl border-r-2 border-[var(--neon)]';
+                    div.innerHTML = `<span class="text-[9px] text-[var(--neon)] font-black">${x.u}</span><p class="text-sm mt-1">${x.m}</p>`;
                     box.appendChild(div);
                 });
                 box.scrollTop = box.scrollHeight;
@@ -168,20 +197,18 @@
         }
 
         const uploader = cloudinary.createUploadWidget({ cloudName: "dfscughol", uploadPreset: "update_vk" }, (e, r) => {
-            if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, sender: NODE_ID });
+            if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, sender: USER_TAG, likes: 0 });
         });
-        document.getElementById('upload-trigger').onclick = () => uploader.open();
+        document.getElementById('upload-btn').onclick = () => uploader.open();
 
-        function initOS() {
+        function initObserver() {
             const obs = new IntersectionObserver(entries => {
                 entries.forEach(e => {
                     const v = e.target.querySelector('video');
                     if(e.isIntersecting) {
-                        e.target.classList.add('active');
                         v.play().catch(()=>{});
-                        activeVideo = e.target.dataset.id;
+                        currentVideoID = e.target.dataset.id;
                     } else {
-                        e.target.classList.remove('active');
                         v.pause();
                     }
                 });
