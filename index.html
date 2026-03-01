@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VΞLΘX | NEXT GEN</title>
+    <title>VΞLΘX | PREMIUM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -13,200 +13,126 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Cairo:wght@300;700&display=swap');
         :root { --neon: #bf00ff; --cyan: #00f3ff; --dark: #05010a; }
         
-        body { margin: 0; background: var(--dark); color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; height: 100vh; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--dark); color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; height: 100vh; user-select: none; }
         
-        /* مشغل التمرير السلس */
-        .v-scroller { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+        .v-scroller { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .v-scroller::-webkit-scrollbar { display: none; }
         
-        .v-frame { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        
-        video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.2, 0, 0.2, 1); }
-        .v-frame.active video { transform: scale(1.02); }
+        .v-frame { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; overflow: hidden; }
+        video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* تأثير القلب عند النقر المزدوج */
-        .heart-tap { position: absolute; pointer-events: none; z-index: 1000; font-size: 100px; color: var(--cyan); text-shadow: 0 0 40px var(--cyan); animation: heartPop 0.8s ease-out forwards; }
-        @keyframes heartPop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(-15deg); } 30% { opacity: 1; transform: translate(-50%, -50%) scale(1.4) rotate(0deg); } 100% { opacity: 0; transform: translate(-50%, -120%) scale(1.2) rotate(15deg); } }
-
-        /* الهيدر الحديث */
-        .top-hud {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 40px 25px;
-            background: linear-gradient(to bottom, rgba(5,1,10,0.8) 0%, transparent 100%);
-            z-index: 100; display: flex; justify-content: space-between; align-items: flex-start;
+        /* الشعار العلوي الأنيق الثابت */
+        .fixed-header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            padding: 25px; text-align: center;
+            background: linear-gradient(to bottom, rgba(5,1,10,0.9) 0%, transparent 100%);
+            pointer-events: none;
         }
-        .brand-logo { font-family: 'Orbitron'; font-weight: 900; font-size: 28px; letter-spacing: 5px; color: #fff; text-shadow: 0 0 20px var(--neon); }
-        .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 5px 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: bold; color: var(--cyan); }
-
-        /* الأزرار الجانبية المتطورة */
-        .side-interface { position: absolute; left: 20px; bottom: 130px; display: flex; flex-direction: column; gap: 22px; z-index: 100; }
-        .action-node { 
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .main-logo-text {
+            font-family: 'Orbitron'; font-weight: 900; font-size: 32px;
+            letter-spacing: 8px; color: #fff;
+            text-shadow: 0 0 10px var(--neon), 0 0 20px var(--neon);
+            display: inline-block;
         }
-        .node-blur { 
-            width: 58px; height: 58px; background: rgba(255,255,255,0.05); backdrop-filter: blur(20px);
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.1); font-size: 24px; position: relative;
-        }
-        .action-node:active { transform: scale(0.85); }
-        .node-blur::after { content: ''; position: absolute; inset: 0; border-radius: 20px; box-shadow: 0 0 15px transparent; transition: 0.3s; }
-        .action-node:hover .node-blur::after { box-shadow: 0 0 20px var(--cyan); border: 1px solid var(--cyan); }
-        .label { font-size: 10px; font-weight: 900; font-family: 'Orbitron'; color: rgba(255,255,255,0.5); }
+        .main-logo-text span { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
 
-        /* الناف بار السفلي العائم */
-        .dock-bar {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 85%; max-width: 400px; height: 75px;
-            background: rgba(255,255,255,0.03); backdrop-filter: blur(25px);
-            border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
+        /* العلامة المائية داخل الفيديو */
+        .internal-watermark {
+            position: absolute; bottom: 120px; left: 20px;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 14px;
+            color: rgba(255,255,255,0.3); letter-spacing: 3px;
+            padding: 5px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px); pointer-events: none;
+            z-index: 50;
+        }
+
+        /* أزرار التفاعل الجانبية */
+        .side-interface { position: absolute; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .action-circle { 
+            width: 55px; height: 55px; background: rgba(255,255,255,0.05); 
+            backdrop-filter: blur(15px); border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; cursor: pointer; transition: 0.3s;
+        }
+        .action-circle:active { transform: scale(0.9); border-color: var(--cyan); }
+        .count-tag { font-size: 10px; font-weight: bold; text-align: center; margin-top: 4px; font-family: 'Orbitron'; color: rgba(255,255,255,0.6); }
+
+        /* الناف بار السفلي */
+        .bottom-nav {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; height: 70px;
+            background: rgba(255,255,255,0.03); backdrop-filter: blur(30px);
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
             display: flex; justify-content: space-around; align-items: center; z-index: 1000;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        .dock-icon { font-size: 22px; color: rgba(255,255,255,0.3); transition: 0.4s; }
-        .dock-icon.active { color: var(--cyan); text-shadow: 0 0 15px var(--cyan); }
-        .btn-plus { width: 55px; height: 42px; background: #fff; color: #000; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
-
-        /* العلامة المائية */
-        .v-watermark { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; font-family: 'Orbitron'; font-size: 18px; letter-spacing: 8px; opacity: 0.15; font-weight: 900; background: linear-gradient(to bottom, #fff, var(--neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        #chat-layer { position: fixed; inset: 0; background: rgba(5,1,10,0.98); z-index: 2000; display: none; padding: 40px 30px; }
+        .nav-btn { font-size: 20px; color: rgba(255,255,255,0.3); }
+        .nav-btn.active { color: #fff; text-shadow: 0 0 10px #fff; }
+        .upload-center { width: 50px; height: 38px; background: var(--cyan); color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <main class="v-scroller" id="main-feed"></main>
+    <header class="fixed-header">
+        <div class="main-logo-text">VΞL<span>Θ</span>X</div>
+    </header>
 
-    <nav class="dock-bar">
-        <i class="fas fa-home dock-icon active" onclick="location.reload()"></i>
-        <i class="fas fa-search dock-icon"></i>
-        <div class="btn-plus" id="upload-btn"><i class="fas fa-plus"></i></div>
-        <i class="fas fa-comment-dots dock-icon" onclick="toggleChat(true)"></i>
-        <i class="fas fa-user dock-icon"></i>
+    <main class="v-scroller" id="video-feed"></main>
+
+    <nav class="bottom-nav">
+        <i class="fas fa-home nav-btn active"></i>
+        <i class="fas fa-search nav-btn"></i>
+        <div class="upload-center" id="upload-trigger"><i class="fas fa-plus"></i></div>
+        <i class="fas fa-comment-alt nav-btn"></i>
+        <i class="fas fa-user nav-btn"></i>
     </nav>
 
-    <div id="chat-layer" class="flex flex-col">
-        <div class="flex justify-between items-center mb-10"><h2 class="font-black text-2xl font-[Orbitron] text-[var(--cyan)]">NEURAL_FEED</h2><i class="fas fa-times text-2xl" onclick="toggleChat(false)"></i></div>
-        <div id="chat-display" class="flex-1 overflow-y-auto space-y-6 pr-2"></div>
-        <div class="flex gap-4 mt-6 p-4 bg-white/5 rounded-3xl border border-white/10">
-            <input type="text" id="chat-input" class="flex-1 bg-transparent outline-none p-2" placeholder="Send a message...">
-            <button onclick="pushMsg()" class="bg-white text-black px-8 py-3 rounded-2xl font-bold">PUSH</button>
-        </div>
-    </div>
-
     <script>
-        const USER_TAG = localStorage.getItem('velox_user') || 'USER_' + Math.random().toString(36).substr(2, 4).toUpperCase();
-        localStorage.setItem('velox_user', USER_TAG);
-        let currentID = null;
-
         const firebaseConfig = { databaseURL: "https://forg-c693e-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         db.ref('videos').on('value', snap => {
-            const feed = document.getElementById('main-feed');
+            const feed = document.getElementById('video-feed');
             const data = snap.val(); if(!data) return;
             feed.innerHTML = '';
             Object.keys(data).reverse().forEach(id => {
-                const sec = document.createElement('section');
-                sec.className = 'v-frame';
-                sec.dataset.id = id;
-                sec.innerHTML = `
-                    <div class="top-hud">
-                        <div class="brand-logo">VΞLΘX</div>
-                        <div class="live-badge"><span class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span> SYSTEM_LIVE</div>
-                    </div>
-                    <div class="v-watermark">VΞLΘX_PROTOCOL</div>
-                    <video loop playsinline src="${data[id].url}" onclick="handleTap(event, '${id}')"></video>
+                const section = document.createElement('section');
+                section.className = 'v-frame';
+                section.innerHTML = `
+                    <div class="internal-watermark">VΞLΘX OFFICIAL</div>
+                    <video loop playsinline src="${data[id].url}"></video>
                     <div class="side-interface">
-                        <div class="action-node" onclick="likeVideo('${id}')">
-                            <div class="node-blur"><i class="fas fa-bolt text-[var(--cyan)]"></i></div>
-                            <span class="label" id="likes-${id}">${data[id].likes || 0}</span>
+                        <div onclick="likeVideo('${id}')">
+                            <div class="action-circle"><i class="fas fa-heart text-red-500"></i></div>
+                            <div class="count-tag" id="likes-${id}">${data[id].likes || 0}</div>
                         </div>
-                        <div class="action-node" onclick="toggleChat(true)">
-                            <div class="node-blur"><i class="fas fa-comment"></i></div>
-                            <span class="label">TALK</span>
-                        </div>
-                        <div class="action-node" onclick="shareVideo('${data[id].url}')">
-                            <div class="node-blur"><i class="fas fa-share-alt"></i></div>
-                            <span class="label">PUSH</span>
-                        </div>
+                        <div class="action-circle"><i class="fas fa-share text-white"></i></div>
                     </div>
                 `;
-                feed.appendChild(sec);
+                feed.appendChild(section);
             });
-            initObs();
+            initObserver();
         });
-
-        let lastTap = 0;
-        function handleTap(e, id) {
-            const now = Date.now();
-            if (now - lastTap < 300) {
-                const heart = document.createElement('i');
-                heart.className = 'fas fa-heart heart-tap';
-                heart.style.left = e.clientX + 'px';
-                heart.style.top = e.clientY + 'px';
-                document.body.appendChild(heart);
-                setTimeout(() => heart.remove(), 800);
-                likeVideo(id);
-            }
-            lastTap = now;
-        }
 
         function likeVideo(id) {
             db.ref(`videos/${id}/likes`).transaction(c => (c || 0) + 1);
-            if(window.navigator.vibrate) window.navigator.vibrate(40);
-        }
-
-        function shareVideo(url) {
-            navigator.share ? navigator.share({url}) : (alert("Link Copied!"), navigator.clipboard.writeText(url));
-        }
-
-        function toggleChat(s) {
-            document.getElementById('chat-layer').style.display = s ? 'flex' : 'none';
-            if(s) loadChat();
-        }
-
-        function pushMsg() {
-            const i = document.getElementById('chat-input');
-            if(i.value.trim() && currentID) {
-                db.ref(`comments/${currentID}`).push({ u: USER_TAG, m: i.value });
-                i.value = '';
-            }
-        }
-
-        function loadChat() {
-            db.ref(`comments/${currentID}`).on('value', s => {
-                const box = document.getElementById('chat-display'); box.innerHTML = '';
-                const d = s.val();
-                if(d) Object.values(d).forEach(x => {
-                    const div = document.createElement('div');
-                    div.className = 'p-5 bg-white/5 rounded-3xl border-l-4 border-[var(--cyan)] animate-fade-in';
-                    div.innerHTML = `<span class="text-[10px] text-[var(--cyan)] font-black tracking-widest uppercase">${x.u}</span><p class="text-sm mt-2 opacity-80">${x.m}</p>`;
-                    box.appendChild(div);
-                });
-                box.scrollTop = box.scrollHeight;
-            });
+            if(window.navigator.vibrate) window.navigator.vibrate(50);
         }
 
         const uploader = cloudinary.createUploadWidget({ cloudName: "dfscughol", uploadPreset: "update_vk" }, (e, r) => {
-            if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, sender: USER_TAG, likes: 0 });
+            if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, likes: 0 });
         });
-        document.getElementById('upload-btn').onclick = () => uploader.open();
+        document.getElementById('upload-trigger').onclick = () => uploader.open();
 
-        function initObs() {
-            const obs = new IntersectionObserver(es => {
-                es.forEach(e => {
+        function initObserver() {
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
                     const v = e.target.querySelector('video');
-                    if(e.isIntersecting) {
-                        e.target.classList.add('active');
-                        v.play().catch(()=>{});
-                        currentID = e.target.dataset.id;
-                    } else {
-                        e.target.classList.remove('active');
-                        v.pause();
-                    }
+                    e.isIntersecting ? v.play().catch(()=>{}) : v.pause();
                 });
-            }, { threshold: 0.7 });
+            }, { threshold: 0.8 });
             document.querySelectorAll('.v-frame').forEach(f => obs.observe(f));
         }
 
