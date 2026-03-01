@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="referrer" content="no-referrer-when-downgrade" />
-    <title>VΞLΘX | OFFICIAL</title>
+    <title>VΞLΘX | THE FINAL PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -13,72 +13,38 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Cairo:wght@300;700&display=swap');
         :root { --neon: #bf00ff; --cyan: #00f3ff; --dark: #05010a; }
-        
         body { margin: 0; background: var(--dark); color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; height: 100vh; user-select: none; }
-        
         .v-scroller { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .v-scroller::-webkit-scrollbar { display: none; }
-        
         .v-frame { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
-
-        /* الهيدر العلوي الأنيق */
-        .fixed-header {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-            padding: 25px; text-align: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-            pointer-events: none;
-        }
-        .main-logo-text {
-            font-family: 'Orbitron'; font-weight: 900; font-size: 30px;
-            letter-spacing: 6px; color: #fff;
-            text-shadow: 0 0 15px var(--neon);
-        }
+        .fixed-header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 25px; text-align: center; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%); pointer-events: none; }
+        .main-logo-text { font-family: 'Orbitron'; font-weight: 900; font-size: 30px; letter-spacing: 6px; color: #fff; text-shadow: 0 0 15px var(--neon); }
         .main-logo-text span { color: var(--cyan); }
-
-        /* العلامة المائية في الزاوية اليسرى */
-        .v-watermark-left {
-            position: absolute; top: 100px; left: 20px;
-            font-family: 'Orbitron'; font-weight: 900; font-size: 11px;
-            color: rgba(255,255,255,0.4); letter-spacing: 3px;
-            padding: 5px 12px; border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px); z-index: 50;
-        }
-
-        /* واجهة التفاعل الجانبية */
+        .v-watermark-left { position: absolute; top: 100px; left: 20px; font-family: 'Orbitron'; font-weight: 900; font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 3px; padding: 5px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); z-index: 50; }
         .side-interface { position: absolute; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
-        .action-node { 
-            width: 55px; height: 55px; background: rgba(255,255,255,0.07); 
-            backdrop-filter: blur(20px); border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px; cursor: pointer; transition: 0.3s;
-        }
+        .action-node { width: 55px; height: 55px; background: rgba(255,255,255,0.07); backdrop-filter: blur(20px); border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; transition: 0.3s; }
         .action-node:active { transform: scale(0.85); border-color: var(--cyan); }
-
-        /* الشريط السفلي العائم */
-        .bottom-nav {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: 85%; max-width: 400px; height: 70px;
-            background: rgba(255,255,255,0.03); backdrop-filter: blur(30px);
-            border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
-        }
+        .bottom-nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 400px; height: 70px; background: rgba(255,255,255,0.03); backdrop-filter: blur(30px); border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
         .nav-icon { font-size: 20px; color: rgba(255,255,255,0.3); transition: 0.3s; }
         .nav-icon.active { color: #fff; text-shadow: 0 0 10px #fff; }
         .add-btn { width: 50px; height: 38px; background: #fff; color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        #comment-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; height: 60%; background: rgba(10,1,20,0.98); backdrop-filter: blur(25px); border-radius: 30px 30px 0 0; z-index: 2000; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 25px; border-top: 1px solid var(--neon); }
+        #comment-sheet.open { bottom: 0; }
     </style>
 </head>
 <body>
-
-    <header class="fixed-header">
-        <div class="main-logo-text">VΞL<span>Θ</span>X</div>
-    </header>
-
+    <header class="fixed-header"><div class="main-logo-text">VΞL<span>Θ</span>X</div></header>
     <main class="v-scroller" id="main-stream"></main>
-
+    <div id="comment-sheet" class="flex flex-col">
+        <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-6" onclick="closeComments()"></div>
+        <h3 class="font-bold text-lg mb-4 text-[var(--cyan)]">التعليقات</h3>
+        <div id="comments-list" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2"></div>
+        <div class="flex gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
+            <input type="text" id="comment-input" class="flex-1 bg-transparent outline-none text-sm" placeholder="أضف تعليقاً...">
+            <button onclick="postComment()" class="text-[var(--cyan)] font-bold px-2">نشر</button>
+        </div>
+    </div>
     <nav class="bottom-nav">
         <i class="fas fa-home nav-icon active" onclick="location.reload()"></i>
         <i class="fas fa-compass nav-icon"></i>
@@ -86,68 +52,62 @@
         <i class="fas fa-comment-dots nav-icon"></i>
         <i class="fas fa-user-circle nav-icon"></i>
     </nav>
-
     <script>
+        const USER_TAG = localStorage.getItem('vx_user') || 'GHOST_' + Math.random().toString(36).substr(2, 4).toUpperCase();
+        localStorage.setItem('vx_user', USER_TAG);
+        let activeVideoID = null;
         const firebaseConfig = { databaseURL: "https://forg-c693e-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
         db.ref('videos').on('value', snap => {
             const stream = document.getElementById('main-stream');
             const data = snap.val(); if(!data) return;
             stream.innerHTML = '';
             Object.keys(data).reverse().forEach(id => {
                 const section = document.createElement('section');
-                section.className = 'v-frame';
+                section.className = 'v-frame'; section.dataset.id = id;
                 section.innerHTML = `
                     <div class="v-watermark-left">VΞLΘX_PROTOCOL</div>
                     <video loop playsinline src="${data[id].url}"></video>
                     <div class="side-interface">
-                        <div onclick="like('${id}')">
-                            <div class="action-node"><i class="fas fa-heart text-red-500"></i></div>
-                            <div class="text-[10px] text-center mt-1 font-bold opacity-60">${data[id].likes || 0}</div>
-                        </div>
+                        <div onclick="like('${id}')"><div class="action-node"><i class="fas fa-heart text-red-500"></i></div><div class="text-[10px] text-center mt-1 font-bold opacity-60">${data[id].likes || 0}</div></div>
+                        <div onclick="openComments('${id}')"><div class="action-node"><i class="fas fa-comment text-white"></i></div><div class="text-[10px] text-center mt-1 font-bold opacity-60">CHAT</div></div>
                         <div class="action-node" onclick="share('${data[id].url}')"><i class="fas fa-share text-white"></i></div>
-                    </div>
-                `;
+                    </div>`;
                 stream.appendChild(section);
             });
             setupObserver();
         });
-
-        function like(id) {
-            db.ref(`videos/${id}/likes`).transaction(c => (c || 0) + 1);
-            if(window.navigator.vibrate) window.navigator.vibrate(40);
-        }
-
-        function share(url) {
-            if (navigator.share) {
-                navigator.share({ title: 'VΞLΘX', url: url });
-            } else {
-                navigator.clipboard.writeText(url);
-                alert("Copied!");
+        function openComments(id) { activeVideoID = id; document.getElementById('comment-sheet').classList.add('open'); loadComments(id); }
+        function closeComments() { document.getElementById('comment-sheet').classList.remove('open'); }
+        function postComment() {
+            const input = document.getElementById('comment-input');
+            if(input.value.trim() && activeVideoID) {
+                db.ref(`comments/${activeVideoID}`).push({ user: USER_TAG, text: input.value });
+                input.value = '';
             }
         }
-
-        const uploader = cloudinary.createUploadWidget({ cloudName: "dfscughol", uploadPreset: "update_vk" }, (e, r) => {
-            if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, likes: 0 });
-        });
-        document.getElementById('upload-gate').onclick = () => uploader.open();
-
-        function setupObserver() {
-            const obs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    const v = e.target.querySelector('video');
-                    if(e.isIntersecting) v.play().catch(()=>{});
-                    else v.pause();
+        function loadComments(id) {
+            db.ref(`comments/${id}`).on('value', s => {
+                const list = document.getElementById('comments-list'); list.innerHTML = '';
+                const data = s.val();
+                if(data) Object.values(data).reverse().forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-white/5 p-3 rounded-xl border-r-2 border-[var(--cyan)]';
+                    div.innerHTML = `<span class="text-[9px] text-[var(--neon)] block font-bold font-[Orbitron]">${c.user}</span><p class="text-sm mt-1">${c.text}</p>`;
+                    list.appendChild(div);
                 });
-            }, { threshold: 0.8 });
+            });
+        }
+        function like(id) { db.ref(`videos/${id}/likes`).transaction(c => (c || 0) + 1); if(window.navigator.vibrate) window.navigator.vibrate(40); }
+        function share(url) { navigator.share ? navigator.share({url}) : alert("Link Copied!"); }
+        const uploader = cloudinary.createUploadWidget({ cloudName: "dfscughol", uploadPreset: "update_vk" }, (e, r) => { if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, likes: 0 }); });
+        document.getElementById('upload-gate').onclick = () => uploader.open();
+        function setupObserver() {
+            const obs = new IntersectionObserver(es => { es.forEach(e => { const v = e.target.querySelector('video'); if(e.isIntersecting) { v.play().catch(()=>{}); activeVideoID = e.target.dataset.id; } else v.pause(); }); }, { threshold: 0.8 });
             document.querySelectorAll('.v-frame').forEach(f => obs.observe(f));
         }
-
-        document.addEventListener('touchstart', () => { 
-            document.querySelectorAll('video').forEach(v => v.muted = false); 
-        }, {once:true});
+        document.addEventListener('touchstart', () => { document.querySelectorAll('video').forEach(v => v.muted = false); }, {once:true});
     </script>
 </body>
 </html>
