@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VΞLΘX | PREMIUM</title>
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <title>VΞLΘX | OFFICIAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -21,55 +22,53 @@
         .v-frame { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* الشعار العلوي الأنيق الثابت */
+        /* الهيدر العلوي الأنيق */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
             padding: 25px; text-align: center;
-            background: linear-gradient(to bottom, rgba(5,1,10,0.9) 0%, transparent 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
             pointer-events: none;
         }
         .main-logo-text {
-            font-family: 'Orbitron'; font-weight: 900; font-size: 32px;
-            letter-spacing: 8px; color: #fff;
-            text-shadow: 0 0 10px var(--neon), 0 0 20px var(--neon);
-            display: inline-block;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 30px;
+            letter-spacing: 6px; color: #fff;
+            text-shadow: 0 0 15px var(--neon);
         }
-        .main-logo-text span { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+        .main-logo-text span { color: var(--cyan); }
 
-        /* العلامة المائية داخل الفيديو */
-        .internal-watermark {
-            position: absolute; bottom: 120px; left: 20px;
-            font-family: 'Orbitron'; font-weight: 900; font-size: 14px;
-            color: rgba(255,255,255,0.3); letter-spacing: 3px;
-            padding: 5px 12px; border-radius: 8px;
+        /* العلامة المائية في الزاوية اليسرى */
+        .v-watermark-left {
+            position: absolute; top: 100px; left: 20px;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 11px;
+            color: rgba(255,255,255,0.4); letter-spacing: 3px;
+            padding: 5px 12px; border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px); pointer-events: none;
-            z-index: 50;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px); z-index: 50;
         }
 
-        /* أزرار التفاعل الجانبية */
+        /* واجهة التفاعل الجانبية */
         .side-interface { position: absolute; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
-        .action-circle { 
-            width: 55px; height: 55px; background: rgba(255,255,255,0.05); 
-            backdrop-filter: blur(15px); border-radius: 50%;
+        .action-node { 
+            width: 55px; height: 55px; background: rgba(255,255,255,0.07); 
+            backdrop-filter: blur(20px); border-radius: 50%;
             border: 1px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: center;
             font-size: 22px; cursor: pointer; transition: 0.3s;
         }
-        .action-circle:active { transform: scale(0.9); border-color: var(--cyan); }
-        .count-tag { font-size: 10px; font-weight: bold; text-align: center; margin-top: 4px; font-family: 'Orbitron'; color: rgba(255,255,255,0.6); }
+        .action-node:active { transform: scale(0.85); border-color: var(--cyan); }
 
-        /* الناف بار السفلي */
+        /* الشريط السفلي العائم */
         .bottom-nav {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; height: 70px;
+            width: 85%; max-width: 400px; height: 70px;
             background: rgba(255,255,255,0.03); backdrop-filter: blur(30px);
-            border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
             display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
-        .nav-btn { font-size: 20px; color: rgba(255,255,255,0.3); }
-        .nav-btn.active { color: #fff; text-shadow: 0 0 10px #fff; }
-        .upload-center { width: 50px; height: 38px; background: var(--cyan); color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .nav-icon { font-size: 20px; color: rgba(255,255,255,0.3); transition: 0.3s; }
+        .nav-icon.active { color: #fff; text-shadow: 0 0 10px #fff; }
+        .add-btn { width: 50px; height: 38px; background: #fff; color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -78,14 +77,14 @@
         <div class="main-logo-text">VΞL<span>Θ</span>X</div>
     </header>
 
-    <main class="v-scroller" id="video-feed"></main>
+    <main class="v-scroller" id="main-stream"></main>
 
     <nav class="bottom-nav">
-        <i class="fas fa-home nav-btn active"></i>
-        <i class="fas fa-search nav-btn"></i>
-        <div class="upload-center" id="upload-trigger"><i class="fas fa-plus"></i></div>
-        <i class="fas fa-comment-alt nav-btn"></i>
-        <i class="fas fa-user nav-btn"></i>
+        <i class="fas fa-home nav-icon active" onclick="location.reload()"></i>
+        <i class="fas fa-compass nav-icon"></i>
+        <div class="add-btn" id="upload-gate"><i class="fas fa-plus"></i></div>
+        <i class="fas fa-comment-dots nav-icon"></i>
+        <i class="fas fa-user-circle nav-icon"></i>
     </nav>
 
     <script>
@@ -94,43 +93,53 @@
         const db = firebase.database();
 
         db.ref('videos').on('value', snap => {
-            const feed = document.getElementById('video-feed');
+            const stream = document.getElementById('main-stream');
             const data = snap.val(); if(!data) return;
-            feed.innerHTML = '';
+            stream.innerHTML = '';
             Object.keys(data).reverse().forEach(id => {
                 const section = document.createElement('section');
                 section.className = 'v-frame';
                 section.innerHTML = `
-                    <div class="internal-watermark">VΞLΘX OFFICIAL</div>
+                    <div class="v-watermark-left">VΞLΘX_PROTOCOL</div>
                     <video loop playsinline src="${data[id].url}"></video>
                     <div class="side-interface">
-                        <div onclick="likeVideo('${id}')">
-                            <div class="action-circle"><i class="fas fa-heart text-red-500"></i></div>
-                            <div class="count-tag" id="likes-${id}">${data[id].likes || 0}</div>
+                        <div onclick="like('${id}')">
+                            <div class="action-node"><i class="fas fa-heart text-red-500"></i></div>
+                            <div class="text-[10px] text-center mt-1 font-bold opacity-60">${data[id].likes || 0}</div>
                         </div>
-                        <div class="action-circle"><i class="fas fa-share text-white"></i></div>
+                        <div class="action-node" onclick="share('${data[id].url}')"><i class="fas fa-share text-white"></i></div>
                     </div>
                 `;
-                feed.appendChild(section);
+                stream.appendChild(section);
             });
-            initObserver();
+            setupObserver();
         });
 
-        function likeVideo(id) {
+        function like(id) {
             db.ref(`videos/${id}/likes`).transaction(c => (c || 0) + 1);
-            if(window.navigator.vibrate) window.navigator.vibrate(50);
+            if(window.navigator.vibrate) window.navigator.vibrate(40);
+        }
+
+        function share(url) {
+            if (navigator.share) {
+                navigator.share({ title: 'VΞLΘX', url: url });
+            } else {
+                navigator.clipboard.writeText(url);
+                alert("Copied!");
+            }
         }
 
         const uploader = cloudinary.createUploadWidget({ cloudName: "dfscughol", uploadPreset: "update_vk" }, (e, r) => {
             if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, likes: 0 });
         });
-        document.getElementById('upload-trigger').onclick = () => uploader.open();
+        document.getElementById('upload-gate').onclick = () => uploader.open();
 
-        function initObserver() {
+        function setupObserver() {
             const obs = new IntersectionObserver(entries => {
                 entries.forEach(e => {
                     const v = e.target.querySelector('video');
-                    e.isIntersecting ? v.play().catch(()=>{}) : v.pause();
+                    if(e.isIntersecting) v.play().catch(()=>{});
+                    else v.pause();
                 });
             }, { threshold: 0.8 });
             document.querySelectorAll('.v-frame').forEach(f => obs.observe(f));
