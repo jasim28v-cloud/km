@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VΞLΘX | THE REAL PROTOCOL</title>
+    <title>VΞLΘX | AUDIO CORE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -11,206 +11,131 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Cairo:wght@200;700&display=swap');
-        :root { --neon: #bf00ff; --cyan: #00f3ff; --deep-purple: #070113; }
+        :root { --neon: #bf00ff; --cyan: #00f3ff; --deep-purple: #050010; }
         
         body { margin: 0; background: var(--deep-purple); color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; height: 100vh; }
         
         .v-scroller { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .v-scroller::-webkit-scrollbar { display: none; }
         
-        .v-frame { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }
-        
-        .video-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .v-frame { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* الهيدر الاحترافي */
-        .top-hud {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 25px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
-            z-index: 100; display: flex; flex-direction: column; gap: 8px;
+        /* واجهة الغرفة الصوتية */
+        #audio-room {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 40%;
+            background: rgba(10, 1, 24, 0.95); backdrop-filter: blur(30px);
+            border-top: 2px solid var(--cyan); border-radius: 40px 40px 0 0;
+            z-index: 4000; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; align-items: center; padding: 30px;
         }
-        .brand-box { display: flex; justify-content: space-between; align-items: center; }
-        .brand-logo { font-family: 'Orbitron'; font-weight: 900; font-size: 26px; letter-spacing: 4px; color: #fff; text-shadow: 0 0 15px var(--neon); }
-        .user-status { font-family: 'Orbitron'; font-size: 10px; color: var(--cyan); letter-spacing: 1px; background: rgba(0,243,255,0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--cyan); }
+        #audio-room.active { bottom: 0; }
 
-        /* شريط التقدم */
-        .system-progress { width: 40%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; }
-        .progress-active { width: 75%; height: 100%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); transition: 0.5s; }
+        /* نبضات الصوت البصرية */
+        .voice-wave {
+            display: flex; gap: 5px; height: 40px; align-items: center; margin: 20px 0;
+        }
+        .wave-bar { width: 4px; background: var(--cyan); border-radius: 2px; animation: wave 1s infinite ease-in-out; }
+        @keyframes wave { 0%, 100% { height: 10px; } 50% { height: 40px; } }
 
-        /* العلامة المائية الملونة */
-        .v-watermark {
-            position: absolute; top: 50%; right: 20px; transform: translateY(-50%);
-            writing-mode: vertical-rl; font-family: 'Orbitron'; font-weight: 900;
-            font-size: 20px; letter-spacing: 10px; opacity: 0.2; pointer-events: none;
-            background: linear-gradient(to bottom, #fff, var(--neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        .mic-btn {
+            width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1);
+            border: 2px solid var(--cyan); display: flex; align-items: center; justify-content: center;
+            font-size: 30px; cursor: pointer; transition: 0.3s;
         }
+        .mic-btn.on { background: var(--cyan); color: #000; box-shadow: 0 0 30px var(--cyan); }
 
-        /* أزرار التفاعل الحقيقية (بدون إعلانات) */
-        .side-interface { position: absolute; left: 20px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
-        .interaction-node { 
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-            cursor: pointer; transition: 0.3s;
-        }
-        .node-circle { 
-            width: 55px; height: 55px; background: rgba(255,255,255,0.08); backdrop-filter: blur(15px);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.1); font-size: 22px;
-        }
-        .interaction-node:active .node-circle { transform: scale(0.9); border-color: var(--cyan); }
-        .node-text { font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.6); font-family: 'Orbitron'; }
-
-        /* الناف بار السفلي */
-        .dock-bar {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 420px; height: 75px;
-            background: rgba(10,1,24,0.85); backdrop-filter: blur(25px);
-            border-radius: 30px; border: 1px solid rgba(191,0,255,0.2);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
-        }
-        .dock-icon { font-size: 22px; color: rgba(255,255,255,0.3); transition: 0.3s; cursor: pointer; }
-        .dock-icon.active { color: var(--neon); text-shadow: 0 0 15px var(--neon); }
-        .center-portal { 
-            width: 60px; height: 45px; background: #fff; color: #000; 
-            border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 20px rgba(255,255,255,0.3);
-        }
-
-        /* واجهة الدردشة */
-        #chat-layer { position: fixed; inset: 0; background: rgba(7,1,19,0.99); z-index: 2000; display: none; padding: 35px; border-left: 1px solid var(--neon); }
+        .side-interface { position: absolute; right: 20px; bottom: 130px; display: flex; flex-direction: column; gap: 25px; z-index: 100; }
+        .action-node { width: 55px; height: 55px; background: rgba(0,0,0,0.5); border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <main class="v-scroller" id="main-feed"></main>
+    <main class="v-scroller" id="feed-container"></main>
 
-    <nav class="dock-bar">
-        <i class="fas fa-home dock-icon active"></i>
-        <i class="fas fa-compass dock-icon"></i>
-        <div class="center-portal" id="upload-btn"><i class="fas fa-plus"></i></div>
-        <i class="fas fa-comment-alt dock-icon" onclick="toggleChat(true)"></i>
-        <i class="fas fa-user-circle dock-icon"></i>
-    </nav>
-
-    <div id="chat-layer" class="flex flex-col">
-        <div class="flex justify-between items-center mb-8"><h2 class="font-black text-2xl font-[Orbitron] text-[var(--cyan)]">NEURAL_FEED</h2><i class="fas fa-chevron-left text-3xl" onclick="toggleChat(false)"></i></div>
-        <div id="chat-display" class="flex-1 overflow-y-auto space-y-4 mb-6 pr-2"></div>
-        <div class="flex gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
-            <input type="text" id="chat-input" class="flex-1 bg-transparent outline-none" placeholder="Transmit signal...">
-            <button onclick="pushMsg()" class="px-8 py-3 bg-[var(--neon)] text-white font-bold rounded-xl">SEND</button>
+    <div id="audio-room">
+        <div class="w-16 h-1 bg-white/20 rounded-full mb-6"></div>
+        <h3 class="font-[Orbitron] text-[var(--cyan)] tracking-widest text-sm">AUDIO_CORE // LIVE</h3>
+        
+        <div class="voice-wave" id="visualizer" style="display: none;">
+            <div class="wave-bar" style="animation-delay: 0.1s"></div>
+            <div class="wave-bar" style="animation-delay: 0.3s"></div>
+            <div class="wave-bar" style="animation-delay: 0.5s"></div>
+            <div class="wave-bar" style="animation-delay: 0.2s"></div>
+            <div class="wave-bar" style="animation-delay: 0.4s"></div>
         </div>
+
+        <div class="flex gap-10 mt-6 items-center">
+            <div class="mic-btn" id="mic-trigger" onclick="toggleMic()">
+                <i class="fas fa-microphone-slash" id="mic-icon"></i>
+            </div>
+        </div>
+        
+        <p class="mt-6 text-[10px] opacity-40 uppercase tracking-[4px]">Press to transmit signal</p>
+        <button onclick="closeAudio()" class="mt-auto text-xs opacity-60 underline">Disconnect</button>
     </div>
 
-    <script>
-        const USER_TAG = localStorage.getItem('velox_user') || 'MEMBER_' + Math.random().toString(36).substr(2, 4).toUpperCase();
-        localStorage.setItem('velox_user', USER_TAG);
-        let currentVideoID = null;
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[85%] h-16 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full flex justify-around items-center z-[2000]">
+        <i class="fas fa-home opacity-40"></i>
+        <div class="w-12 h-10 bg-white text-black rounded-xl flex items-center justify-center"><i class="fas fa-plus"></i></div>
+        <i class="fas fa-headset text-[var(--cyan)]" onclick="openAudio()"></i>
+    </nav>
 
+    <script>
         const firebaseConfig = { databaseURL: "https://forg-c693e-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // جلب البيانات وبناء الفيديوهات
-        db.ref('videos').on('value', snap => {
-            const feed = document.getElementById('main-feed');
-            const data = snap.val(); if(!data) return;
+        db.ref('videos').on('value', s => {
+            const feed = document.getElementById('feed-container');
+            const data = s.val(); if(!data) return;
             feed.innerHTML = '';
             Object.keys(data).reverse().forEach(id => {
-                const section = document.createElement('section');
-                section.className = 'v-frame';
-                section.dataset.id = id;
-                section.innerHTML = `
-                    <div class="top-hud">
-                        <div class="brand-box">
-                            <div class="brand-logo">VΞLΘX</div>
-                            <div class="user-status">ACTIVE_MEMBER // LVL.1</div>
-                        </div>
-                        <div class="system-progress"><div class="progress-active"></div></div>
-                    </div>
-                    <div class="video-wrapper">
-                        <div class="v-watermark">VΞLΘX_PROTOCOL</div>
-                        <video loop playsinline src="${data[id].url}"></video>
-                    </div>
+                const sec = document.createElement('section');
+                sec.className = 'v-frame';
+                sec.innerHTML = `
+                    <video loop playsinline src="${data[id].url}"></video>
                     <div class="side-interface">
-                        <div class="interaction-node" onclick="likeVideo('${id}')">
-                            <div class="node-circle"><i class="fas fa-heart text-red-500"></i></div>
-                            <span class="node-text" id="likes-${id}">${data[id].likes || 0}</span>
-                        </div>
-                        <div class="interaction-node" onclick="toggleChat(true)">
-                            <div class="node-circle"><i class="fas fa-comment-dots text-[var(--cyan)]"></i></div>
-                            <span class="node-text">CHAT</span>
-                        </div>
-                        <div class="interaction-node" onclick="shareVideo('${data[id].url}')">
-                            <div class="node-circle"><i class="fas fa-share-alt"></i></div>
-                            <span class="node-text">PUSH</span>
-                        </div>
+                        <div class="action-node" onclick="openAudio()"><i class="fas fa-tower-broadcast text-[var(--cyan)]"></i></div>
+                        <div class="action-node"><i class="fas fa-heart text-red-500"></i></div>
+                        <div class="action-node"><i class="fas fa-comment-dots text-white"></i></div>
                     </div>
                 `;
-                feed.appendChild(section);
+                feed.appendChild(sec);
             });
-            initObserver();
+            initObs();
         });
 
-        // وظيفة الإعجاب الحقيقية (بدون إعلانات)
-        function likeVideo(id) {
-            const likeRef = db.ref(`videos/${id}/likes`);
-            likeRef.transaction(current => (current || 0) + 1);
-            // إضافة تأثير بصري
-            const btn = document.querySelector(`[onclick="likeVideo('${id}')"] .node-circle`);
-            btn.style.borderColor = "#00f3ff";
-            btn.style.boxShadow = "0 0 20px #00f3ff";
+        let isMicOn = false;
+        function openAudio() { document.getElementById('audio-room').classList.add('active'); }
+        function closeAudio() { 
+            document.getElementById('audio-room').classList.remove('active');
+            if(isMicOn) toggleMic();
         }
 
-        // وظيفة المشاركة الحقيقية
-        function shareVideo(url) {
-            if (navigator.share) {
-                navigator.share({ title: 'VΞLΘX Video', url: url });
+        function toggleMic() {
+            isMicOn = !isMicOn;
+            const btn = document.getElementById('mic-trigger');
+            const icon = document.getElementById('mic-icon');
+            const vis = document.getElementById('visualizer');
+
+            if(isMicOn) {
+                btn.classList.add('on');
+                icon.className = 'fas fa-microphone';
+                vis.style.display = 'flex';
+                // هنا يتم ربط الـ Audio Stream مستقبلاً
             } else {
-                alert("تم نسخ رابط الفيديو!");
-                navigator.clipboard.writeText(url);
+                btn.classList.remove('on');
+                icon.className = 'fas fa-microphone-slash';
+                vis.style.display = 'none';
             }
         }
 
-        function toggleChat(s) {
-            document.getElementById('chat-layer').style.display = s ? 'flex' : 'none';
-            if(s) loadChat();
-        }
-
-        function pushMsg() {
-            const i = document.getElementById('chat-input');
-            if(i.value.trim() && currentVideoID) {
-                db.ref(`comments/${currentVideoID}`).push({ u: USER_TAG, m: i.value });
-                i.value = '';
-            }
-        }
-
-        function loadChat() {
-            db.ref(`comments/${currentVideoID}`).on('value', s => {
-                const box = document.getElementById('chat-display'); box.innerHTML = '';
-                const d = s.val();
-                if(d) Object.values(d).forEach(x => {
-                    const div = document.createElement('div');
-                    div.className = 'p-4 bg-white/5 rounded-2xl border-r-2 border-[var(--neon)]';
-                    div.innerHTML = `<span class="text-[9px] text-[var(--neon)] font-black">${x.u}</span><p class="text-sm mt-1">${x.m}</p>`;
-                    box.appendChild(div);
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        const uploader = cloudinary.createUploadWidget({ cloudName: "dfscughol", uploadPreset: "update_vk" }, (e, r) => {
-            if (r.event === "success") db.ref('videos').push({ url: r.info.secure_url, sender: USER_TAG, likes: 0 });
-        });
-        document.getElementById('upload-btn').onclick = () => uploader.open();
-
-        function initObserver() {
-            const obs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
+        function initObs() {
+            const obs = new IntersectionObserver(es => {
+                es.forEach(e => {
                     const v = e.target.querySelector('video');
-                    if(e.isIntersecting) {
-                        v.play().catch(()=>{});
-                        currentVideoID = e.target.dataset.id;
-                    } else {
-                        v.pause();
-                    }
+                    e.isIntersecting ? v.play() : v.pause();
                 });
             }, { threshold: 0.8 });
             document.querySelectorAll('.v-frame').forEach(f => obs.observe(f));
