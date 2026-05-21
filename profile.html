@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💙 GOMPBOOK | بروفايل</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+            background:#e9ebee;
+            color:#333;
+            min-height:100vh;
+        }
+        .fb-header{
+            background:#3b5998;
+            color:white;
+            position:fixed;
+            top:0;left:0;right:0;
+            z-index:1000;
+            height:42px;
+            box-shadow:0 2px 4px rgba(0,0,0,0.15);
+        }
+        .fb-header-inner{
+            max-width:980px;
+            margin:0 auto;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            height:100%;
+            padding:0 10px;
+        }
+        .fb-logo{
+            font-size:22px;
+            font-weight:bold;
+            color:white;
+            text-decoration:none;
+        }
+        .fb-nav a, .fb-nav button{
+            color:white;
+            text-decoration:none;
+            font-size:12px;
+            font-weight:bold;
+            padding:6px 10px;
+            border-radius:2px;
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .fb-nav a:hover, .fb-nav button:hover{background:rgba(255,255,255,0.1)}
+
+        .cover-wrap{
+            background:#3b5998;
+            height:200px;
+            position:relative;
+            margin-top:42px;
+            overflow:hidden;
+        }
+        .cover-wrap img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        .cover-gradient{
+            position:absolute;
+            bottom:0;left:0;right:0;
+            height:80px;
+            background:linear-gradient(transparent, rgba(0,0,0,0.3));
+        }
+
+        .profile-main{
+            max-width:980px;
+            margin:0 auto;
+            padding:0 10px;
+            position:relative;
+        }
+        .avatar-section{
+            display:flex;
+            align-items:flex-end;
+            gap:12px;
+            margin-top:-60px;
+            position:relative;
+            z-index:2;
+        }
+        .avatar-lg{
+            width:120px;
+            height:120px;
+            border:4px solid white;
+            border-radius:4px;
+            object-fit:cover;
+            background:white;
+            box-shadow:0 1px 3px rgba(0,0,0,0.2);
+        }
+        .profile-name-section{
+            flex:1;
+            padding-bottom:10px;
+        }
+        .profile-name{
+            font-size:22px;
+            font-weight:bold;
+            color:white;
+            text-shadow:0 1px 3px rgba(0,0,0,0.5);
+        }
+        .verified-badge{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            width:18px;height:18px;
+            background:#3b5998;
+            color:white;
+            border-radius:50%;
+            font-size:10px;
+            vertical-align:middle;
+            margin-right:4px;
+        }
+
+        .profile-nav{
+            border-bottom:1px solid #ddd;
+            background:white;
+            padding:0 10px;
+            margin-bottom:10px;
+        }
+        .profile-nav-inner{
+            max-width:980px;
+            margin:0 auto;
+            display:flex;
+            gap:0;
+        }
+        .profile-tab{
+            padding:12px 16px;
+            font-size:12px;
+            font-weight:bold;
+            color:#666;
+            cursor:pointer;
+            border-bottom:3px solid transparent;
+            background:none;
+            border-top:none;
+            border-left:none;
+            border-right:none;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .profile-tab.active{
+            color:#3b5998;
+            border-bottom-color:#3b5998;
+        }
+        .profile-tab:hover{background:#f7f7f7}
+
+        .content-grid{
+            max-width:980px;
+            margin:0 auto;
+            padding:10px;
+            display:flex;
+            gap:10px;
+        }
+        .left-col{width:280px;flex-shrink:0}
+        .right-col{flex:1;min-width:0}
+
+        .info-box{
+            background:white;
+            border:1px solid #ddd;
+            border-radius:2px;
+            padding:12px;
+            margin-bottom:10px;
+        }
+        .info-box h4{
+            font-size:12px;
+            color:#333;
+            margin-bottom:8px;
+            border-bottom:1px solid #eee;
+            padding-bottom:6px;
+        }
+        .info-row{
+            font-size:11px;
+            color:#666;
+            margin:4px 0;
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .info-row i{width:16px;text-align:center;color:#999}
+
+        .friends-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:4px;
+            margin-top:8px;
+        }
+        .friend-mini{
+            text-align:center;
+            cursor:pointer;
+        }
+        .friend-mini img{
+            width:50px;height:50px;
+            object-fit:cover;
+            border-radius:2px;
+        }
+        .friend-mini span{
+            font-size:9px;
+            color:#3b5998;
+            display:block;
+            margin-top:2px;
+        }
+
+        .btn-friend{
+            background:#3b5998;
+            color:white;
+            border:none;
+            padding:8px 16px;
+            border-radius:2px;
+            font-weight:bold;
+            font-size:12px;
+            cursor:pointer;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+            margin:4px 0;
+        }
+        .btn-friend:hover{background:#4a6491}
+        .btn-friend.pending{background:#90949c}
+        .btn-friend.friends{background:#42b72a}
+        .btn-friend.friends:hover{background:#36a420}
+        .btn-edit{
+            background:#f0f0f0;
+            border:1px solid #ccc;
+            padding:6px 14px;
+            border-radius:2px;
+            font-size:12px;
+            cursor:pointer;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+
+        /* Admin Panel */
+        .admin-box{
+            background:white;
+            border:2px solid #3b5998;
+            border-radius:4px;
+            padding:16px;
+            margin-bottom:10px;
+        }
+        .admin-box h3{
+            color:#3b5998;
+            margin-bottom:12px;
+            font-size:14px;
+        }
+        .admin-stats{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:8px;
+            margin-bottom:12px;
+        }
+        .stat-card{
+            background:#f7f7f7;
+            padding:10px;
+            border-radius:4px;
+            text-align:center;
+        }
+        .stat-card .stat-val{
+            font-size:24px;
+            font-weight:bold;
+            color:#3b5998;
+        }
+        .stat-card .stat-lbl{
+            font-size:10px;
+            color:#666;
+        }
+        .admin-btn{
+            background:#3b5998;
+            color:white;
+            border:none;
+            padding:6px 12px;
+            border-radius:2px;
+            font-size:11px;
+            cursor:pointer;
+            margin:2px;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .admin-btn.ban{background:#d93025}
+        .admin-btn.ban:hover{background:#b71c1c}
+        .admin-btn:hover{background:#4a6491}
+
+        .spinner{
+            width:30px;height:30px;
+            border:3px solid #ddd;
+            border-top-color:#3b5998;
+            border-radius:50%;
+            animation:spin 0.7s linear infinite;
+            margin:20px auto;
+        }
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .toast{
+            position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+            background:#333;color:white;
+            padding:10px 24px;border-radius:4px;
+            z-index:2000;opacity:0;transition:opacity 0.3s;
+            pointer-events:none;font-size:12px;
+        }
+        .toast.show{opacity:1}
+
+        @media (max-width:768px){
+            .content-grid{flex-direction:column}
+            .left-col{width:100%}
+            .avatar-lg{width:80px;height:80px}
+            .profile-name{font-size:16px}
+        }
+    </style>
+</head>
+<body>
+
+<div class="fb-header">
+    <div class="fb-header-inner">
+        <a href="index.html" class="fb-logo">gompbook</a>
+        <div class="fb-nav">
+            <a href="index.html">الرئيسية</a>
+            <a href="profile.html" class="active">بروفايلي</a>
+            <a href="friends.html">أصدقاء</a>
+            <a href="chat.html">رسائل</a>
+            <button onclick="auth.signOut();window.location.href='auth.html'">خروج</button>
+        </div>
+    </div>
+</div>
+
+<div class="cover-wrap" id="coverWrap">
+    <img id="coverImg" src="" alt="cover" style="display:none">
+    <div class="cover-gradient"></div>
+</div>
+
+<div class="profile-main">
+    <div class="avatar-section">
+        <img id="avatarImg" class="avatar-lg" src="" alt="avatar">
+        <div class="profile-name-section">
+            <div class="profile-name">
+                <span id="nameDisplay"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="profile-nav">
+    <div class="profile-nav-inner">
+        <button class="profile-tab active" onclick="switchTab('wall', this)">الحائط</button>
+        <button class="profile-tab" onclick="switchTab('info', this)">معلومات</button>
+        <button class="profile-tab" onclick="switchTab('photos', this)">صور</button>
+        <button class="profile-tab" onclick="switchTab('friends', this)">أصدقاء</button>
+    </div>
+</div>
+
+<div class="content-grid">
+    <div class="left-col">
+        <div class="info-box" id="infoBox">
+            <h4>معلومات</h4>
+            <div id="infoContent"><div class="spinner"></div></div>
+        </div>
+        <div class="info-box" id="friendsBox">
+            <h4>الأصدقاء (<span id="friendsCount">0</span>)</h4>
+            <div class="friends-grid" id="friendsGrid"></div>
+        </div>
+        <div id="actionsBox"></div>
+    </div>
+    <div class="right-col" id="mainContent">
+        <div class="spinner"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+    let currentUser = null;
+    let currentUserData = null;
+    let profileUserId = null;
+    let isOwnProfile = false;
+    let allUsers = {};
+    let allPosts = [];
+    let currentTab = 'wall';
+
+    function switchTab(tab, btn) {
+        currentTab = tab;
+        document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        loadMainContent();
+    }
+
+    function loadMainContent() {
+        const mc = document.getElementById('mainContent');
+        if (currentTab === 'wall') {
+            loadWallPosts();
+        } else if (currentTab === 'info') {
+            loadDetailedInfo();
+        } else if (currentTab === 'photos') {
+            loadPhotos();
+        } else if (currentTab === 'friends') {
+            loadFriendsFull();
+        }
+    }
+
+    function loadWallPosts() {
+        const mc = document.getElementById('mainContent');
+        const userPosts = allPosts.filter(p => p.authorId === profileUserId).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        if (!userPosts.length) {
+            mc.innerHTML = '<div style="background:white;border:1px solid #ddd;padding:20px;text-align:center;color:#999;">لا توجد منشورات على الحائط</div>';
+            return;
+        }
+        mc.innerHTML = userPosts.map(post => {
+            const author = allUsers[post.authorId] || { username: post.authorName };
+            return `<div style="background:white;border:1px solid #ddd;padding:12px;margin-bottom:8px;">
+                <div style="font-weight:bold;font-size:12px;color:#3b5998;margin-bottom:4px;">${author.username}</div>
+                ${post.text ? `<div style="font-size:13px;margin-bottom:6px;">${post.text}</div>` : ''}
+                ${post.imageUrl ? `<img src="${post.imageUrl}" style="max-width:100%;cursor:pointer" onclick="window.open('${post.imageUrl}')">` : ''}
+                <div style="font-size:10px;color:#999;margin-top:4px;">❤️ ${Object.keys(post.likes||{}).length} إعجاب | 💬 ${Object.keys(post.comments||{}).length} تعليق</div>
+            </div>`;
+        }).join('');
+    }
+
+    function loadDetailedInfo() {
+        const mc = document.getElementById('mainContent');
+        const u = allUsers[profileUserId];
+        if (!u) { mc.innerHTML = '<div style="text-align:center;padding:40px;">لا توجد معلومات</div>'; return; }
+        mc.innerHTML = `<div style="background:white;border:1px solid #ddd;padding:16px;">
+            <h4 style="color:#333;margin-bottom:12px;">معلومات أساسية</h4>
+            <p><strong>الاسم:</strong> ${u.username || ''}</p>
+            <p><strong>البريد:</strong> ${u.email || ''}</p>
+            <p><strong>السيرة:</strong> ${u.bio || 'لا توجد'}</p>
+            <p><strong>الموقع:</strong> ${u.location || 'غير محدد'}</p>
+            <p><strong>آخر ظهور:</strong> ${formatTimeAgo(u.lastSeen)}</p>
+            <p><strong>تاريخ الانضمام:</strong> ${new Date(u.createdAt).toLocaleDateString('ar-SA')}</p>
+        </div>`;
+    }
+
+    function loadPhotos() {
+        const mc = document.getElementById('mainContent');
+        const userPosts = allPosts.filter(p => p.authorId === profileUserId && p.imageUrl);
+        if (!userPosts.length) {
+            mc.innerHTML = '<div style="background:white;border:1px solid #ddd;padding:20px;text-align:center;color:#999;">لا توجد صور</div>';
+            return;
+        }
+        mc.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">${userPosts.map(p => `<img src="${p.imageUrl}" style="width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer;" onclick="window.open('${p.imageUrl}')">`).join('')}</div>`;
+    }
+
+    function loadFriendsFull() {
+        const mc = document.getElementById('mainContent');
+        const u = allUsers[profileUserId];
+        const friends = u?.friends || {};
+        const friendIds = Object.keys(friends);
+        if (!friendIds.length) {
+            mc.innerHTML = '<div style="background:white;border:1px solid #ddd;padding:20px;text-align:center;color:#999;">لا يوجد أصدقاء بعد</div>';
+            return;
+        }
+        mc.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${friendIds.map(fid => {
+            const fu = allUsers[fid] || { username: 'مستخدم' };
+            return `<div style="background:white;border:1px solid #ddd;padding:8px;text-align:center;cursor:pointer;" onclick="openProfile('${fid}')">
+                <img src="${fu.avatarUrl || (DICEBEAR_URL + '?seed=' + fid)}" style="width:60px;height:60px;object-fit:cover;border-radius:2px;margin-bottom:4px;">
+                <div style="font-size:11px;color:#3b5998;">${fu.username}</div>
+            </div>`;
+        }).join('')}</div>`;
+    }
+
+    async function loadProfile() {
+        const u = allUsers[profileUserId];
+        if (!u) {
+            document.body.innerHTML = '<div style="text-align:center;padding:80px;font-size:18px;">المستخدم غير موجود</div>';
+            return;
+        }
+        const verifiedBadge = u.isVerified ? '<span class="verified-badge"><i class="fas fa-check"></i></span>' : '';
+        document.getElementById('nameDisplay').innerHTML = u.username + ' ' + verifiedBadge;
+        document.getElementById('avatarImg').src = u.avatarUrl || (DICEBEAR_URL + '?seed=' + profileUserId);
+
+        // Cover
+        if (u.coverImageUrl) {
+            document.getElementById('coverImg').src = u.coverImageUrl;
+            document.getElementById('coverImg').style.display = 'block';
+        }
+
+        // Info Box
+        document.getElementById('infoContent').innerHTML = `
+            <div class="info-row"><i class="fas fa-user"></i> ${u.username}</div>
+            ${u.bio ? `<div class="info-row"><i class="fas fa-quote-right"></i> ${u.bio}</div>` : ''}
+            ${u.location ? `<div class="info-row"><i class="fas fa-map-marker-alt"></i> ${u.location}</div>` : ''}
+            <div class="info-row"><i class="fas fa-clock"></i> آخر ظهور: ${formatTimeAgo(u.lastSeen)}</div>
+        `;
+
+        // Friends Box
+        const friends = u.friends || {};
+        const friendIds = Object.keys(friends).slice(0, 6);
+        document.getElementById('friendsCount').innerText = Object.keys(friends).length;
+        document.getElementById('friendsGrid').innerHTML = friendIds.map(fid => {
+            const fu = allUsers[fid] || { username: 'مستخدم' };
+            return `<div class="friend-mini" onclick="openProfile('${fid}')">
+                <img src="${fu.avatarUrl || (DICEBEAR_URL + '?seed=' + fid)}" alt="friend">
+                <span>${fu.username.substring(0, 8)}</span>
+            </div>`;
+        }).join('') || '<span style="font-size:10px;color:#999;">لا يوجد أصدقاء</span>';
+
+        // Actions
+        const actionsBox = document.getElementById('actionsBox');
+        if (isOwnProfile) {
+            actionsBox.innerHTML = `<button class="btn-edit" onclick="editProfile()">تعديل الملف</button>`;
+        } else {
+            const isFriend = currentUserData?.friends?.[profileUserId];
+            const hasRequest = u.friendRequests?.[currentUser?.uid];
+            let btnClass = 'btn-friend';
+            let btnText = 'أضف صديقاً';
+            let btnAction = 'sendFriendRequest()';
+            if (isFriend) {
+                btnClass += ' friends';
+                btnText = '✓ صديق';
+                btnAction = 'removeFriend()';
+            } else if (hasRequest) {
+                btnClass += ' pending';
+                btnText = 'تم إرسال الطلب';
+                btnAction = '';
+            }
+            actionsBox.innerHTML = `
+                <button class="${btnClass}" onclick="${btnAction}" ${!btnAction ? 'disabled' : ''}>${btnText}</button>
+                <button class="btn-edit" onclick="window.location.href='chat.html?uid=${profileUserId}'">مراسلة</button>
+            `;
+        }
+
+        // Admin Panel
+        if (isOwnProfile && ADMIN_EMAILS.includes(currentUser?.email)) {
+            loadAdminPanel();
+        }
+
+        loadMainContent();
+    }
+
+    async function sendFriendRequest() {
+        await db.ref('users/' + profileUserId + '/friendRequests/' + currentUser.uid).set({
+            username: currentUserData?.username,
+            avatarUrl: currentUserData?.avatarUrl,
+            timestamp: Date.now()
+        });
+        await db.ref('notifications/' + profileUserId).push({
+            from: currentUserData?.username,
+            msg: 'أرسل لك طلب صداقة 👫',
+            timestamp: Date.now(),
+            type: 'friend_request',
+            fromUserId: currentUser.uid
+        });
+        showToast('✅ تم إرسال طلب الصداقة');
+        loadProfile();
+    }
+
+    async function removeFriend() {
+        if (!confirm('إزالة من الأصدقاء؟')) return;
+        await db.ref('users/' + currentUser.uid + '/friends/' + profileUserId).remove();
+        await db.ref('users/' + profileUserId + '/friends/' + currentUser.uid).remove();
+        showToast('تمت إزالة الصديق');
+        loadProfile();
+    }
+
+    async function editProfile() {
+        const u = allUsers[profileUserId] || currentUserData;
+        const newUsername = prompt('الاسم الجديد:', u?.username || '');
+        if (newUsername && newUsername.trim().length >= 3) {
+            await db.ref('users/' + profileUserId).update({ username: newUsername.trim() });
+            showToast('✅ تم تحديث الاسم');
+            location.reload();
+        }
+    }
+
+    function openProfile(uid) {
+        if (uid === currentUser?.uid) { window.location.href = 'profile.html'; }
+        else { window.location.href = 'profile.html?uid=' + uid; }
+    }
+
+    // Admin
+    async function loadAdminPanel() {
+        const mc = document.getElementById('mainContent');
+        const totalUsers = Object.keys(allUsers).length;
+        const totalPosts = allPosts.length;
+        const totalBanned = Object.values(allUsers).filter(u => u.banned).length;
+        const totalVerified = Object.values(allUsers).filter(u => u.isVerified).length;
+
+        const adminHtml = `<div class="admin-box">
+            <h3>👑 لوحة تحكم الأدمن</h3>
+            <div class="admin-stats">
+                <div class="stat-card"><div class="stat-val">${totalUsers}</div><div class="stat-lbl">مستخدمين</div></div>
+                <div class="stat-card"><div class="stat-val">${totalPosts}</div><div class="stat-lbl">منشورات</div></div>
+                <div class="stat-card"><div class="stat-val">${totalBanned}</div><div class="stat-lbl">محظورين</div></div>
+                <div class="stat-card"><div class="stat-val">${totalVerified}</div><div class="stat-lbl">موثقين</div></div>
+            </div>
+            <h4 style="margin:8px 0;">قائمة المستخدمين (أحدث 10)</h4>
+            <div id="adminUserList"></div>
+            <h4 style="margin:8px 0;">أحدث المنشورات</h4>
+            <div id="adminPostList"></div>
+        </div>`;
+
+        const existingAdmin = document.getElementById('adminPanelContainer');
+        if (existingAdmin) existingAdmin.remove();
+
+        const adminDiv = document.createElement('div');
+        adminDiv.id = 'adminPanelContainer';
+        adminDiv.innerHTML = adminHtml;
+        mc.prepend(adminDiv);
+
+        // Load admin lists
+        const userList = document.getElementById('adminUserList');
+        const usersArr = Object.entries(allUsers).sort(([,a],[,b]) => (b.createdAt||0) - (a.createdAt||0)).slice(0, 10);
+        userList.innerHTML = usersArr.map(([id, u]) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #eee;font-size:11px;">
+                <span style="cursor:pointer;color:#3b5998;" onclick="openProfile('${id}')">${u.username || 'مستخدم'} ${u.isVerified?'✓':''}</span>
+                <span>
+                    <button class="admin-btn" onclick="toggleVerify('${id}')">${u.isVerified?'إلغاء توثيق':'توثيق'}</button>
+                    <button class="admin-btn ban" onclick="toggleBan('${id}')">${u.banned?'إلغاء حظر':'حظر'}</button>
+                    <button class="admin-btn ban" onclick="deleteUserPosts('${id}')">حذف منشورات</button>
+                </span>
+            </div>
+        `).join('');
+
+        const postList = document.getElementById('adminPostList');
+        const postsArr = allPosts.sort((a,b) => (b.timestamp||0) - (a.timestamp||0)).slice(0, 10);
+        postList.innerHTML = postsArr.map(p => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #eee;font-size:11px;">
+                <span>${(p.text || 'صورة').substring(0, 30)} - ${p.authorName || 'مستخدم'}</span>
+                <button class="admin-btn ban" onclick="deletePost('${p.id}')">حذف</button>
+            </div>
+        `).join('');
+    }
+
+    window.toggleVerify = async function(id) {
+        const u = allUsers[id];
+        await db.ref('users/' + id).update({ isVerified: !u.isVerified, verifiedAt: Date.now(), verifiedBy: currentUser.uid });
+        showToast('✅ تم');
+        setTimeout(() => location.reload(), 500);
+    };
+    window.toggleBan = async function(id) {
+        const u = allUsers[id];
+        await db.ref('users/' + id).update({ banned: !u.banned, bannedAt: Date.now(), bannedBy: currentUser.uid });
+        showToast('✅ تم');
+        setTimeout(() => location.reload(), 500);
+    };
+    window.deletePost = async function(postId) {
+        if (!confirm('حذف المنشور؟')) return;
+        await db.ref('posts/' + postId).remove();
+        showToast('🗑️ تم حذف المنشور');
+        setTimeout(() => location.reload(), 500);
+    };
+    window.deleteUserPosts = async function(userId) {
+        if (!confirm('حذف جميع منشورات هذا المستخدم؟')) return;
+        const userPosts = allPosts.filter(p => p.authorId === userId);
+        for (let p of userPosts) {
+            await db.ref('posts/' + p.id).remove();
+        }
+        showToast('🗑️ تم حذف جميع المنشورات');
+        setTimeout(() => location.reload(), 500);
+    };
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+    function formatTimeAgo(ts) {
+        if (!ts) return '';
+        const diff = Date.now() - ts;
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'الآن';
+        if (mins < 60) return 'منذ ' + mins + ' دقيقة';
+        const hours = Math.floor(diff / 3600000);
+        if (hours < 24) return 'منذ ' + hours + ' ساعة';
+        return new Date(ts).toLocaleDateString('ar-SA');
+    }
+
+    // Init
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) { window.location.replace('auth.html'); return; }
+        currentUser = user;
+        const params = new URLSearchParams(window.location.search);
+        profileUserId = params.get('uid') || user.uid;
+        isOwnProfile = (profileUserId === user.uid);
+
+        const snap = await db.ref('users/' + user.uid).get();
+        if (snap.exists()) currentUserData = { uid: user.uid, ...snap.val() };
+
+        db.ref('users').on('value', s => {
+            allUsers = s.val() || {};
+            loadProfile();
+        });
+
+        db.ref('posts').on('value', s => {
+            const data = s.val();
+            allPosts = data ? Object.entries(data).map(([k, v]) => ({ id: k, ...v })) : [];
+            if (currentTab === 'wall') loadWallPosts();
+            if (currentTab === 'photos') loadPhotos();
+        });
+
+        db.ref('users/' + user.uid + '/lastSeen').set(Date.now());
+        setInterval(() => {
+            if (currentUser) db.ref('users/' + currentUser.uid + '/lastSeen').set(Date.now());
+        }, 60000);
+    });
+
+    console.log('💙 GOMPBOOK Profile Ready');
+</script>
+</body>
+</html>

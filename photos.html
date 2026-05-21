@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💙 GOMPBOOK | الصور</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'lucida grande',tahoma,verdana,arial,sans-serif;background:#e9ebee;color:#333;min-height:100vh}
+        .fb-header{background:#3b5998;color:white;padding:0;height:42px;display:flex;align-items:center;padding:0 10px;box-shadow:0 2px 4px rgba(0,0,0,0.15)}
+        .fb-logo{font-size:22px;font-weight:bold;color:white;text-decoration:none}
+        .container{max-width:900px;margin:20px auto;padding:10px}
+        .photos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+        .photos-grid img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer;border-radius:2px;transition:opacity 0.2s}
+        .photos-grid img:hover{opacity:0.9}
+        .spinner{width:30px;height:30px;border:3px solid #ddd;border-top-color:#3b5998;border-radius:50%;animation:spin 0.7s linear infinite;margin:20px auto}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .empty-state{text-align:center;padding:40px;color:#999;grid-column:1/-1}
+        .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+        .lightbox.active{opacity:1;pointer-events:auto}
+        .lightbox img{max-width:90vw;max-height:80vh;border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+        .lightbox-close{position:absolute;top:20px;left:20px;background:rgba(255,255,255,0.2);color:white;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;border:none}
+    </style>
+</head>
+<body>
+<div class="fb-header"><a href="index.html" class="fb-logo">gompbook</a></div>
+<div class="container"><div class="photos-grid" id="photosGrid"><div class="spinner" style="grid-column:1/-1"></div></div></div>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()"><button class="lightbox-close" onclick="closeLightbox()">✕</button><img id="lightboxImg" src=""></div>
+<script src="firebase-config.js"></script>
+<script>
+    auth.onAuthStateChanged(async u=>{if(!u){window.location.href='auth.html';return}const snap=await db.ref('posts').once('value');const posts=snap.val()||{};const allPosts=Object.entries(posts).map(([k,v])=>({id:k,...v}));const imgPosts=allPosts.filter(p=>p.imageUrl).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));const pg=document.getElementById('photosGrid');if(!imgPosts.length){pg.innerHTML='<div class="empty-state"><i class="fas fa-images" style="font-size:48px;display:block;margin-bottom:10px;color:#ddd;"></i>لا توجد صور</div>';return}pg.innerHTML=imgPosts.map(p=>`<img src="${p.imageUrl}" onclick="openLightbox('${p.imageUrl}')" loading="lazy">`).join('')});
+    function openLightbox(url){document.getElementById('lightboxImg').src=url;document.getElementById('lightbox').classList.add('active')}
+    function closeLightbox(){document.getElementById('lightbox').classList.remove('active')}
+</script>
+</body>
+</html>

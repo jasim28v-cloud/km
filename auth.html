@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💙 GOMPBOOK | تسجيل الدخول</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+            background:#e9ebee;
+            min-height:100vh;
+        }
+        .header{
+            background:#3b5998;
+            color:white;
+            padding:12px 0;
+            box-shadow:0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header-inner{
+            max-width:980px;
+            margin:0 auto;
+            padding:0 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo{
+            font-size:32px;
+            font-weight:bold;
+            letter-spacing:-1px;
+            color:white;
+            text-decoration:none;
+        }
+        .login-form-top{
+            display:flex;
+            gap:8px;
+            align-items:center;
+            font-size:12px;
+        }
+        .login-form-top input{
+            padding:5px 8px;
+            border:1px solid #1d2a4a;
+            border-radius:2px;
+            font-size:12px;
+            width:140px;
+        }
+        .login-form-top button{
+            background:#5b74a8;
+            color:white;
+            border:1px solid #29447e;
+            padding:4px 10px;
+            cursor:pointer;
+            font-weight:bold;
+            font-size:12px;
+            border-radius:2px;
+        }
+        .login-form-top button:hover{background:#4a6491}
+        .login-form-top a{color:#9cb4d8;text-decoration:none;font-size:11px}
+
+        .main-content{
+            max-width:980px;
+            margin:0 auto;
+            padding:30px 20px;
+            display:flex;
+            gap:60px;
+        }
+        .info-section{
+            flex:1;
+            padding-top:30px;
+        }
+        .info-section h2{
+            font-size:20px;
+            color:#333;
+            margin-bottom:12px;
+            font-weight:normal;
+        }
+        .info-section p{
+            color:#666;
+            font-size:14px;
+            line-height:1.6;
+        }
+        .signup-section{
+            flex:1;
+        }
+        .signup-box{
+            background:white;
+            padding:20px;
+            border-radius:4px;
+            box-shadow:0 1px 3px rgba(0,0,0,0.1);
+        }
+        .signup-box h2{
+            font-size:28px;
+            color:#333;
+            margin-bottom:8px;
+        }
+        .signup-box .subtitle{
+            color:#666;
+            font-size:14px;
+            margin-bottom:16px;
+        }
+        .signup-box input{
+            width:100%;
+            padding:8px 10px;
+            margin:6px 0;
+            border:1px solid #bdc7d8;
+            border-radius:4px;
+            font-size:14px;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .name-row{
+            display:flex;
+            gap:8px;
+        }
+        .name-row input{flex:1}
+        .signup-box button{
+            background:linear-gradient(#67ae55, #578843);
+            color:white;
+            border:1px solid #3b6e22;
+            padding:8px 20px;
+            font-size:16px;
+            font-weight:bold;
+            border-radius:4px;
+            cursor:pointer;
+            margin-top:10px;
+            min-width:180px;
+            box-shadow:inset 0 1px 1px #a4e388;
+        }
+        .signup-box button:hover{background:linear-gradient(#79bc64, #578843)}
+        .signup-box button:disabled{opacity:0.6;cursor:not-allowed}
+        .msg{color:#d93025;font-size:12px;margin-top:8px;min-height:18px}
+        .msg.success{color:#4caf50}
+
+        .footer{
+            text-align:center;
+            padding:20px;
+            color:#999;
+            font-size:11px;
+            border-top:1px solid #ddd;
+            margin-top:40px;
+        }
+
+        @media (max-width:768px){
+            .main-content{flex-direction:column;gap:20px}
+            .header-inner{flex-direction:column;gap:10px}
+            .login-form-top{flex-wrap:wrap;justify-content:center}
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-inner">
+        <a href="index.html" class="logo">gompbook</a>
+        <form class="login-form-top" onsubmit="event.preventDefault();doLoginTop()">
+            <div>
+                <input type="email" id="loginEmailTop" placeholder="البريد الإلكتروني">
+            </div>
+            <div>
+                <input type="password" id="loginPassTop" placeholder="كلمة المرور">
+            </div>
+            <button type="submit">دخول</button>
+            <a href="#">نسيت كلمة السر؟</a>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="info-section">
+        <h2>GOMPBOOK يساعدك على التواصل ومشاركة ما تريد مع الأشخاص المهمين في حياتك.</h2>
+        <p>💙 انضم إلى شبكة التواصل الاجتماعي الكلاسيكية. شارك منشوراتك، صورك، وتواصل مع أصدقائك بتصميم فيسبوك 2009 الأصلي.</p>
+    </div>
+    <div class="signup-section">
+        <div class="signup-box">
+            <h2>إنشاء حساب جديد</h2>
+            <p class="subtitle">إنه مجاني وسيبقى مجانيًا دائمًا.</p>
+            <div class="name-row">
+                <input type="text" id="regName" placeholder="الاسم الكامل">
+            </div>
+            <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="regPass" placeholder="كلمة المرور">
+            <button id="btnRegister" onclick="doRegister()">تسجيل الاشتراك</button>
+            <div class="msg" id="regMsg"></div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">💙 GOMPBOOK 2009 &copy; جميع الحقوق محفوظة</div>
+
+<script src="firebase-config.js"></script>
+<script>
+    async function doLoginTop(){
+        const email = document.getElementById('loginEmailTop').value.trim();
+        const password = document.getElementById('loginPassTop').value;
+        if(!email || !password){ alert('الرجاء ملء جميع الحقول'); return; }
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            window.location.replace('index.html');
+        } catch(e) {
+            alert('خطأ في تسجيل الدخول: ' + (e.message || 'غير معروف'));
+        }
+    }
+
+    async function doRegister(){
+        const username = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPass').value;
+        const msg = document.getElementById('regMsg');
+        const btn = document.getElementById('btnRegister');
+        if(!username || !email || !password){ msg.innerText = '❌ الرجاء ملء جميع الحقول'; return; }
+        if(username.length < 3){ msg.innerText = '❌ الاسم 3 أحرف على الأقل'; return; }
+        if(password.length < 6){ msg.innerText = '❌ كلمة المرور 6 أحرف على الأقل'; return; }
+        btn.disabled = true; btn.innerText = 'جاري إنشاء الحساب...'; msg.innerText = ''; msg.className = 'msg';
+        try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const uid = userCredential.user.uid;
+            const avatarUrl = DICEBEAR_URL + '?seed=' + uid;
+            const userData = {
+                username: username, email: email, bio: '',
+                website: '', location: '', contactEmail: '',
+                avatarUrl: avatarUrl, hasCustomAvatar: false,
+                coverImageUrl: '', hasCustomCover: false,
+                friends: {}, friendRequests: {},
+                totalLikes: 0, isVerified: false, verifiedAt: null, verifiedBy: null,
+                banned: false, createdAt: Date.now(), lastSeen: Date.now()
+            };
+            await db.ref('users/' + uid).set(userData);
+            msg.innerText = '✅ تم إنشاء الحساب بنجاح! جاري التوجيه...';
+            msg.className = 'msg success';
+            setTimeout(() => { window.location.replace('index.html'); }, 1000);
+        } catch(error) {
+            btn.disabled = false; btn.innerText = 'تسجيل الاشتراك'; msg.className = 'msg';
+            switch(error.code) {
+                case 'auth/email-already-in-use': msg.innerText = '❌ البريد الإلكتروني مستخدم بالفعل'; break;
+                case 'auth/weak-password': msg.innerText = '❌ كلمة المرور ضعيفة جداً'; break;
+                case 'auth/invalid-email': msg.innerText = '❌ بريد إلكتروني غير صالح'; break;
+                default: msg.innerText = '❌ خطأ: ' + (error.message || 'غير معروف');
+            }
+        }
+    }
+
+    auth.onAuthStateChanged(user => {
+        if(user) { window.location.replace('index.html'); }
+    });
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('keydown', function(e) {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                if(this.closest('.login-form-top')) doLoginTop();
+                else doRegister();
+            }
+        });
+    });
+
+    console.log('💙 GOMPBOOK Auth Ready');
+</script>
+</body>
+</html>

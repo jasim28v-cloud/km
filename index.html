@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>💙 GOMPBOOK | الرئيسية</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+            background:#e9ebee;
+            color:#333;
+            min-height:100vh;
+        }
+        /* Facebook 2009 Top Bar */
+        .fb-header{
+            background:#3b5998;
+            color:white;
+            padding:0;
+            position:fixed;
+            top:0;left:0;right:0;
+            z-index:1000;
+            height:42px;
+            box-shadow:0 2px 4px rgba(0,0,0,0.15);
+        }
+        .fb-header-inner{
+            max-width:980px;
+            margin:0 auto;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            height:100%;
+            padding:0 10px;
+        }
+        .fb-logo{
+            font-size:22px;
+            font-weight:bold;
+            color:white;
+            text-decoration:none;
+            margin-right:10px;
+        }
+        .fb-nav{
+            display:flex;
+            align-items:center;
+            gap:15px;
+        }
+        .fb-nav a, .fb-nav button{
+            color:white;
+            text-decoration:none;
+            font-size:12px;
+            font-weight:bold;
+            padding:6px 10px;
+            border-radius:2px;
+            transition:background 0.2s;
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+            white-space:nowrap;
+        }
+        .fb-nav a:hover, .fb-nav button:hover{background:rgba(255,255,255,0.1)}
+        .fb-nav .active{background:rgba(255,255,255,0.15)}
+        .notif-dot{
+            position:relative;
+        }
+        .notif-badge{
+            position:absolute;top:-3px;left:-3px;
+            background:#d93025;
+            color:white;
+            width:18px;height:18px;
+            border-radius:50%;
+            font-size:10px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:bold;
+            display:none;
+        }
+
+        /* Main Layout */
+        .main-container{
+            max-width:980px;
+            margin:52px auto 0;
+            padding:10px;
+            display:flex;
+            gap:10px;
+        }
+        .sidebar-left{
+            width:200px;
+            flex-shrink:0;
+        }
+        .sidebar-left .section-title{
+            font-size:12px;
+            color:#666;
+            font-weight:bold;
+            margin-bottom:8px;
+            padding:8px 10px;
+            border-bottom:1px solid #ddd;
+        }
+        .sidebar-left a{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            padding:6px 10px;
+            color:#3b5998;
+            text-decoration:none;
+            font-size:12px;
+            border-radius:2px;
+            margin:2px 0;
+        }
+        .sidebar-left a:hover{background:#ddd}
+        .sidebar-left a i{width:16px;text-align:center;color:#666}
+        .content-area{
+            flex:1;
+            min-width:0;
+        }
+        .sidebar-right{
+            width:200px;
+            flex-shrink:0;
+        }
+
+        /* Post Composer */
+        .composer{
+            background:white;
+            border:1px solid #ddd;
+            border-radius:2px;
+            padding:12px;
+            margin-bottom:10px;
+        }
+        .composer-top{
+            display:flex;
+            gap:8px;
+            align-items:center;
+            margin-bottom:8px;
+        }
+        .composer-top img{
+            width:40px;height:40px;border-radius:2px;object-fit:cover;
+        }
+        .composer-top input{
+            flex:1;
+            padding:8px 10px;
+            border:1px solid #ddd;
+            border-radius:2px;
+            font-size:13px;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+            background:#f7f7f7;
+        }
+        .composer-btns{
+            display:flex;
+            gap:8px;
+            border-top:1px solid #eee;
+            padding-top:8px;
+        }
+        .composer-btn{
+            flex:1;
+            padding:6px;
+            text-align:center;
+            font-size:11px;
+            font-weight:bold;
+            color:#666;
+            cursor:pointer;
+            border-radius:2px;
+            background:none;
+            border:none;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .composer-btn:hover{background:#f0f0f0}
+        .composer-btn i{margin-left:4px;color:#3b5998}
+        .composer-preview{
+            margin-top:8px;
+            position:relative;
+            display:none;
+        }
+        .composer-preview img{
+            max-width:100%;
+            max-height:200px;
+            border-radius:2px;
+        }
+        .composer-preview .remove-preview{
+            position:absolute;
+            top:4px;left:4px;
+            background:rgba(0,0,0,0.6);
+            color:white;
+            width:24px;height:24px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            font-size:14px;
+            border:none;
+        }
+        .composer .btn-post{
+            background:#3b5998;
+            color:white;
+            border:none;
+            padding:8px 20px;
+            border-radius:2px;
+            font-weight:bold;
+            font-size:12px;
+            cursor:pointer;
+            margin-top:8px;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .composer .btn-post:hover{background:#4a6491}
+        .composer textarea{
+            width:100%;
+            padding:8px;
+            border:1px solid #ddd;
+            border-radius:2px;
+            font-size:13px;
+            resize:vertical;
+            min-height:60px;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+            margin-top:8px;
+            display:none;
+        }
+
+        /* Post Card */
+        .post{
+            background:white;
+            border:1px solid #ddd;
+            border-radius:2px;
+            padding:12px;
+            margin-bottom:10px;
+        }
+        .post-header{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin-bottom:8px;
+        }
+        .post-avatar{
+            width:40px;height:40px;
+            border-radius:2px;
+            object-fit:cover;
+            cursor:pointer;
+        }
+        .post-author{
+            font-weight:bold;
+            font-size:12px;
+            color:#3b5998;
+            cursor:pointer;
+            text-decoration:none;
+        }
+        .post-author:hover{text-decoration:underline}
+        .post-time{
+            font-size:10px;
+            color:#999;
+        }
+        .verified-badge{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            width:14px;height:14px;
+            background:#3b5998;
+            color:white;
+            border-radius:50%;
+            font-size:8px;
+            margin-right:3px;
+            vertical-align:middle;
+        }
+        .post-text{
+            font-size:13px;
+            line-height:1.5;
+            margin-bottom:8px;
+            word-wrap:break-word;
+        }
+        .post-image{
+            max-width:100%;
+            border-radius:2px;
+            cursor:pointer;
+            margin-bottom:8px;
+        }
+        .post-actions{
+            display:flex;
+            border-top:1px solid #eee;
+            padding-top:8px;
+            gap:4px;
+        }
+        .post-action-btn{
+            flex:1;
+            padding:6px;
+            text-align:center;
+            font-size:11px;
+            color:#666;
+            cursor:pointer;
+            border:none;
+            background:none;
+            border-radius:2px;
+            font-weight:bold;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .post-action-btn:hover{background:#eee}
+        .post-action-btn.liked{color:#3b5998}
+        .post-action-btn i{margin-left:3px}
+
+        /* Comments */
+        .post-comments{
+            background:#f7f7f7;
+            padding:8px;
+            border-radius:2px;
+            margin-top:8px;
+        }
+        .comment{
+            display:flex;
+            gap:6px;
+            margin-bottom:6px;
+            font-size:11px;
+        }
+        .comment img{
+            width:28px;height:28px;border-radius:2px;flex-shrink:0;
+        }
+        .comment-body{
+            background:white;
+            padding:5px 8px;
+            border-radius:0 8px 8px 8px;
+            border:1px solid #eee;
+        }
+        .comment-author{
+            font-weight:bold;
+            color:#3b5998;
+            font-size:10px;
+        }
+        .comment-input-row{
+            display:flex;
+            gap:6px;
+            margin-top:8px;
+        }
+        .comment-input-row input{
+            flex:1;
+            padding:6px 10px;
+            border:1px solid #ddd;
+            border-radius:2px;
+            font-size:11px;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+        .comment-input-row button{
+            background:#3b5998;
+            color:white;
+            border:none;
+            padding:4px 10px;
+            border-radius:2px;
+            font-size:11px;
+            cursor:pointer;
+            font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+        }
+
+        /* Lightbox */
+        .lightbox{
+            position:fixed;inset:0;
+            background:rgba(0,0,0,0.85);
+            z-index:9999;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            opacity:0;pointer-events:none;
+            transition:opacity 0.3s;
+            flex-direction:column;
+        }
+        .lightbox.active{opacity:1;pointer-events:auto}
+        .lightbox img{
+            max-width:90vw;max-height:80vh;
+            border-radius:4px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.5);
+        }
+        .lightbox-close{
+            position:absolute;top:20px;left:20px;
+            background:rgba(255,255,255,0.2);
+            color:white;
+            width:40px;height:40px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            font-size:20px;
+            border:none;
+        }
+        .lightbox-close:hover{background:rgba(255,255,255,0.3)}
+
+        .spinner{
+            width:30px;height:30px;
+            border:3px solid #ddd;
+            border-top-color:#3b5998;
+            border-radius:50%;
+            animation:spin 0.7s linear infinite;
+            margin:20px auto;
+        }
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .empty-state{
+            text-align:center;
+            padding:40px;
+            color:#999;
+            font-size:13px;
+        }
+        .toast{
+            position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+            background:#333;color:white;
+            padding:10px 24px;border-radius:4px;
+            z-index:2000;opacity:0;transition:opacity 0.3s;
+            pointer-events:none;font-size:12px;
+        }
+        .toast.show{opacity:1}
+
+        @media (max-width:768px){
+            .main-container{flex-direction:column}
+            .sidebar-left{display:none}
+            .sidebar-right{display:none}
+            .fb-nav{gap:8px}
+            .fb-nav a, .fb-nav button{font-size:10px;padding:4px 6px}
+        }
+    </style>
+</head>
+<body>
+
+<div class="fb-header">
+    <div class="fb-header-inner">
+        <a href="index.html" class="fb-logo">gompbook</a>
+        <div class="fb-nav">
+            <a href="index.html" class="active"><i class="fas fa-home"></i> الرئيسية</a>
+            <a href="profile.html"><i class="fas fa-user"></i> بروفايلي</a>
+            <a href="friends.html"><i class="fas fa-users"></i> أصدقاء</a>
+            <a href="chat.html"><i class="fas fa-comment"></i> رسائل</a>
+            <button class="notif-dot" onclick="openNotifs()">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge" id="notifBadge"></span>
+            </button>
+            <button onclick="auth.signOut();window.location.href='auth.html'"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="sidebar-left">
+        <div class="section-title">القائمة</div>
+        <a href="index.html"><i class="fas fa-newspaper"></i> آخر الأخبار</a>
+        <a href="chat.html"><i class="fas fa-envelope"></i> الرسائل</a>
+        <a href="friends.html"><i class="fas fa-user-friends"></i> الأصدقاء</a>
+        <a href="photos.html"><i class="fas fa-images"></i> الصور</a>
+    </div>
+
+    <div class="content-area">
+        <!-- Composer -->
+        <div class="composer" id="composer">
+            <div class="composer-top">
+                <img id="composerAvatar" src="" alt="me">
+                <input type="text" id="composerInput" placeholder="بماذا تفكر؟" onfocus="showComposerFull()">
+            </div>
+            <textarea id="composerTextarea" placeholder="اكتب منشورك هنا..."></textarea>
+            <div class="composer-preview" id="composerPreview">
+                <img id="previewImg" src="" alt="preview">
+                <button class="remove-preview" onclick="removePreview()">✕</button>
+            </div>
+            <input type="file" id="composerImageFile" accept="image/*" style="display:none" onchange="previewComposerImage(this)">
+            <div class="composer-btns">
+                <button class="composer-btn" onclick="document.getElementById('composerImageFile').click()"><i class="fas fa-image"></i> صورة</button>
+            </div>
+            <button class="btn-post" onclick="submitPost()">نشر</button>
+        </div>
+
+        <!-- Posts Feed -->
+        <div id="postsFeed">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="sidebar-right">
+        <div class="section-title">آخر النشاطات</div>
+        <div id="activitySidebar" style="font-size:11px;color:#666;padding:8px;">
+            <div class="spinner"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="صورة">
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+    let currentUser = null;
+    let currentUserData = null;
+    let allUsers = {};
+    let allPosts = [];
+    let selectedImageFile = null;
+
+    // Lightbox
+    function openLightbox(url) {
+        document.getElementById('lightboxImg').src = url;
+        document.getElementById('lightbox').classList.add('active');
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.getElementById('lightboxImg').src = '';
+    }
+
+    // Composer
+    function showComposerFull() {
+        document.getElementById('composerTextarea').style.display = 'block';
+        document.getElementById('composerTextarea').focus();
+    }
+    function previewComposerImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+        selectedImageFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('composerPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+    function removePreview() {
+        selectedImageFile = null;
+        document.getElementById('composerPreview').style.display = 'none';
+        document.getElementById('composerImageFile').value = '';
+    }
+
+    async function submitPost() {
+        const textarea = document.getElementById('composerTextarea');
+        const text = textarea.value.trim();
+        if (!text && !selectedImageFile) { showToast('اكتب شيئاً أو أضف صورة'); return; }
+        const btn = document.querySelector('.btn-post');
+        btn.disabled = true; btn.innerText = 'جاري النشر...';
+        try {
+            let imageUrl = null;
+            if (selectedImageFile) {
+                const fd = new FormData();
+                fd.append('file', selectedImageFile);
+                fd.append('upload_preset', UPLOAD_PRESET);
+                const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.secure_url) imageUrl = data.secure_url;
+            }
+            const postData = {
+                text: text,
+                imageUrl: imageUrl,
+                authorId: currentUser.uid,
+                authorName: currentUserData?.username || 'مستخدم',
+                authorAvatar: currentUserData?.avatarUrl || (DICEBEAR_URL + '?seed=' + currentUser.uid),
+                likes: {},
+                comments: {},
+                timestamp: Date.now()
+            };
+            await db.ref('posts').push(postData);
+            // Notify friends
+            const friends = currentUserData?.friends || {};
+            for (let friendId in friends) {
+                await db.ref('notifications/' + friendId).push({
+                    from: currentUserData?.username,
+                    msg: 'أضاف منشوراً جديداً',
+                    timestamp: Date.now(),
+                    read: false,
+                    type: 'new_post',
+                    postAuthorId: currentUser.uid
+                });
+            }
+            textarea.value = '';
+            textarea.style.display = 'none';
+            removePreview();
+            showToast('✅ تم نشر المنشور');
+            loadPosts();
+        } catch(e) {
+            showToast('❌ حدث خطأ');
+            console.error(e);
+        }
+        btn.disabled = false; btn.innerText = 'نشر';
+    }
+
+    // Posts
+    function loadPosts() {
+        const feed = document.getElementById('postsFeed');
+        if (!allPosts.length) {
+            feed.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper" style="font-size:48px;color:#ddd;display:block;margin-bottom:10px;"></i>لا توجد منشورات بعد. كن أول من ينشر!</div>';
+            return;
+        }
+        const sorted = allPosts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        feed.innerHTML = sorted.map(post => {
+            const author = allUsers[post.authorId] || { username: post.authorName || 'مستخدم', avatarUrl: post.authorAvatar };
+            const isLiked = post.likes && post.likes[currentUser?.uid];
+            const likesCount = post.likes ? Object.keys(post.likes).length : 0;
+            const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
+            const verifiedBadge = author.isVerified ? '<span class="verified-badge"><i class="fas fa-check"></i></span>' : '';
+            const timeAgo = formatTimeAgo(post.timestamp);
+
+            let commentsHtml = '';
+            if (post.comments) {
+                const commentsArr = Object.entries(post.comments).sort(([,a],[,b]) => (a.timestamp || 0) - (b.timestamp || 0)).slice(-5);
+                commentsHtml = commentsArr.map(([cid, c]) => {
+                    const cu = allUsers[c.userId] || { username: c.username || 'مستخدم', avatarUrl: DICEBEAR_URL + '?seed=' + (c.userId || 'unknown') };
+                    return `<div class="comment">
+                        <img src="${cu.avatarUrl || (DICEBEAR_URL + '?seed=' + c.userId)}" alt="avatar">
+                        <div class="comment-body">
+                            <span class="comment-author">${cu.username}</span>
+                            ${c.text}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            return `<div class="post">
+                <div class="post-header">
+                    <img src="${author.avatarUrl || (DICEBEAR_URL + '?seed=' + post.authorId)}" class="post-avatar" onclick="openProfile('${post.authorId}')">
+                    <div>
+                        <a class="post-author" onclick="openProfile('${post.authorId}')">${author.username} ${verifiedBadge}</a>
+                        <div class="post-time">${timeAgo}</div>
+                    </div>
+                </div>
+                ${post.text ? `<div class="post-text">${escapeHtml(post.text)}</div>` : ''}
+                ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-image" onclick="openLightbox('${post.imageUrl}')" loading="lazy">` : ''}
+                <div class="post-actions">
+                    <button class="post-action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}', this)">
+                        <i class="fas fa-thumbs-up"></i> إعجاب (${likesCount})
+                    </button>
+                    <button class="post-action-btn" onclick="focusComment('${post.id}')">
+                        <i class="fas fa-comment"></i> تعليق (${commentsCount})
+                    </button>
+                    <button class="post-action-btn" onclick="sharePost('${post.id}')">
+                        <i class="fas fa-share"></i> مشاركة
+                    </button>
+                </div>
+                ${post.comments ? `<div class="post-comments">${commentsHtml}</div>` : ''}
+                <div class="comment-input-row">
+                    <input type="text" id="commentInput_${post.id}" placeholder="اكتب تعليقاً..." onkeydown="if(event.key==='Enter')addComment('${post.id}')">
+                    <button onclick="addComment('${post.id}')">تعليق</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function toggleLike(postId, btn) {
+        if (!currentUser) return;
+        const ref = db.ref('posts/' + postId);
+        const snap = await ref.get();
+        const post = snap.val();
+        if (!post) return;
+        let likes = post.likes || {};
+        if (likes[currentUser.uid]) {
+            delete likes[currentUser.uid];
+        } else {
+            likes[currentUser.uid] = true;
+            if (post.authorId && post.authorId !== currentUser.uid) {
+                await db.ref('notifications/' + post.authorId).push({
+                    from: currentUserData?.username,
+                    msg: 'أعجب بمنشورك 👍',
+                    timestamp: Date.now(),
+                    read: false,
+                    type: 'like',
+                    postId: postId
+                });
+            }
+        }
+        await ref.update({ likes });
+        btn.classList.toggle('liked');
+        const countMatch = btn.innerText.match(/\((\d+)\)/);
+        if (countMatch) {
+            const newCount = likes[currentUser.uid] ? parseInt(countMatch[1]) + 1 : parseInt(countMatch[1]) - 1;
+            btn.innerHTML = `<i class="fas fa-thumbs-up"></i> إعجاب (${Math.max(0, newCount)})`;
+        }
+    }
+
+    function focusComment(postId) {
+        const input = document.getElementById('commentInput_' + postId);
+        if (input) input.focus();
+    }
+
+    async function addComment(postId) {
+        const input = document.getElementById('commentInput_' + postId);
+        if (!input || !input.value.trim()) return;
+        const commentData = {
+            userId: currentUser.uid,
+            username: currentUserData?.username || 'مستخدم',
+            text: input.value.trim(),
+            timestamp: Date.now()
+        };
+        await db.ref('posts/' + postId + '/comments').push(commentData);
+        const postSnap = await db.ref('posts/' + postId).get();
+        const post = postSnap.val();
+        if (post && post.authorId !== currentUser.uid) {
+            await db.ref('notifications/' + post.authorId).push({
+                from: currentUserData?.username,
+                msg: 'علّق على منشورك 💬',
+                timestamp: Date.now(),
+                read: false,
+                type: 'comment',
+                postId: postId
+            });
+        }
+        input.value = '';
+        loadPosts();
+    }
+
+    function sharePost(postId) {
+        const url = window.location.origin + '/index.html?post=' + postId;
+        if (navigator.share) {
+            navigator.share({ title: 'منشور من GOMPBOOK', url: url }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(url).then(() => showToast('✅ تم نسخ الرابط'));
+        }
+    }
+
+    // Notifications
+    async function openNotifs() {
+        const snap = await db.ref('notifications/' + currentUser.uid).once('value');
+        const ns = snap.val() || {};
+        const items = Object.values(ns).reverse();
+        let notifText = items.length ? items.map(n => `🔔 ${n.from || 'مستخدم'}: ${n.msg} - ${formatTimeAgo(n.timestamp)}`).join('\n') : 'لا توجد إشعارات';
+        alert('🔔 الإشعارات:\n\n' + notifText);
+        await db.ref('notifications/' + currentUser.uid).remove();
+        updateNotifBadge();
+    }
+
+    function updateNotifBadge() {
+        const badge = document.getElementById('notifBadge');
+        if (badge) badge.style.display = 'none';
+    }
+
+    // Helpers
+    function openProfile(uid) {
+        if (uid === currentUser?.uid) { window.location.href = 'profile.html'; }
+        else { window.location.href = 'profile.html?uid=' + uid; }
+    }
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.innerText = text;
+        return div.innerHTML.replace(/#(\w+)/g, '<span style="color:#3b5998;cursor:pointer">#$1</span>');
+    }
+    function formatTimeAgo(ts) {
+        if (!ts) return '';
+        const diff = Date.now() - ts;
+        const mins = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        if (mins < 1) return 'الآن';
+        if (mins < 60) return 'منذ ' + mins + ' دقيقة';
+        if (hours < 24) return 'منذ ' + hours + ' ساعة';
+        if (days < 7) return 'منذ ' + days + ' يوم';
+        return new Date(ts).toLocaleDateString('ar-SA');
+    }
+
+    // Init
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) { window.location.replace('auth.html'); return; }
+        currentUser = user;
+        const snap = await db.ref('users/' + user.uid).get();
+        if (snap.exists()) currentUserData = { uid: user.uid, ...snap.val() };
+
+        // Set composer avatar
+        document.getElementById('composerAvatar').src = currentUserData?.avatarUrl || (DICEBEAR_URL + '?seed=' + user.uid);
+
+        // Load users
+        db.ref('users').on('value', s => { allUsers = s.val() || {}; });
+
+        // Load posts
+        db.ref('posts').on('value', s => {
+            const data = s.val();
+            if (!data) { allPosts = []; }
+            else {
+                allPosts = Object.entries(data).map(([key, value]) => ({ id: key, ...value }));
+            }
+            loadPosts();
+        });
+
+        // Listen for new notifications
+        db.ref('notifications/' + user.uid).on('value', s => {
+            const ns = s.val() || {};
+            const badge = document.getElementById('notifBadge');
+            if (badge) {
+                const count = Object.keys(ns).length;
+                if (count > 0) {
+                    badge.style.display = 'flex';
+                    badge.innerText = count;
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+
+        // Update last seen
+        db.ref('users/' + user.uid + '/lastSeen').set(Date.now());
+        setInterval(() => {
+            if (currentUser) db.ref('users/' + currentUser.uid + '/lastSeen').set(Date.now());
+        }, 60000);
+    });
+
+    console.log('💙 GOMPBOOK Wall Ready');
+</script>
+</body>
+</html>

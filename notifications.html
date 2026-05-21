@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💙 GOMPBOOK | إشعارات</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'lucida grande',tahoma,verdana,arial,sans-serif;background:#e9ebee;color:#333;min-height:100vh}
+        .fb-header{background:#3b5998;color:white;padding:0;height:42px;display:flex;align-items:center;padding:0 10px;box-shadow:0 2px 4px rgba(0,0,0,0.15)}
+        .fb-logo{font-size:22px;font-weight:bold;color:white;text-decoration:none}
+        .container{max-width:600px;margin:20px auto;padding:10px}
+        .notif-card{background:white;border:1px solid #ddd;border-radius:2px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:12px}
+        .notif-card i{color:#3b5998;font-size:18px;width:24px;text-align:center}
+        .notif-time{font-size:10px;color:#999}
+        .empty-state{text-align:center;padding:40px;color:#999}
+        .spinner{width:30px;height:30px;border:3px solid #ddd;border-top-color:#3b5998;border-radius:50%;animation:spin 0.7s linear infinite;margin:20px auto}
+        @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+</head>
+<body>
+<div class="fb-header"><a href="index.html" class="fb-logo">gompbook</a></div>
+<div class="container" id="notifList"><div class="spinner"></div></div>
+<script src="firebase-config.js"></script>
+<script>
+    auth.onAuthStateChanged(async u=>{if(!u){window.location.href='auth.html';return}const snap=await db.ref('notifications/'+u.uid).once('value');const ns=snap.val()||{};const items=Object.values(ns).reverse();const nl=document.getElementById('notifList');if(!items.length){nl.innerHTML='<div class="empty-state"><i class="fas fa-bell" style="font-size:48px;display:block;margin-bottom:10px;color:#ddd;"></i>لا توجد إشعارات</div>';return}nl.innerHTML=items.map(n=>{const icon=n.type==='friend_request'?'fa-user-plus':n.type==='like'?'fa-thumbs-up':'fa-bell';const time=n.timestamp?new Date(n.timestamp).toLocaleString('ar-SA'):'';return`<div class="notif-card"><i class="fas ${icon}"></i><div><div>${n.from||'مستخدم'}: ${n.msg||''}</div><div class="notif-time">${time}</div></div></div>`}).join('')});
+</script>
+</body>
+</html>
