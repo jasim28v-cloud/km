@@ -64,9 +64,14 @@ jobs:
         run: |
           echo "🔍 جاري سحب جميع ملفات المشروع..."
           
-          # عرض جميع الملفات الموجودة
+          # عرض جميع الملفات الموجودة في المشروع
           echo "📋 جميع الملفات في المشروع:"
           find . -type f -not -path './.git/*' -not -path './node_modules/*' | sort
+          
+          # عرض المجلدات
+          echo ""
+          echo "📂 المجلدات الموجودة:"
+          find . -type d -not -path './.git/*' -not -path './node_modules/*' | sort
           
           # إنشاء مجلد www
           rm -rf www
@@ -78,6 +83,7 @@ jobs:
             SOURCE_DIR="."
           fi
           
+          echo ""
           echo "📁 جاري نسخ الملفات من: $SOURCE_DIR"
           
           # نسخ جميع الملفات والمجلدات
@@ -93,8 +99,22 @@ jobs:
             done
           else
             # نسخ من مجلد محدد
-            cp -r "$SOURCE_DIR"/* www/ 2>/dev/null || true
-            cp -r "$SOURCE_DIR"/.* www/ 2>/dev/null || true
+            if [ -d "$SOURCE_DIR" ]; then
+              echo "  ✅ المجلد $SOURCE_DIR موجود"
+              cp -r "$SOURCE_DIR"/* www/ 2>/dev/null || true
+              cp -r "$SOURCE_DIR"/.* www/ 2>/dev/null || true
+            else
+              echo "  ❌ المجلد $SOURCE_DIR غير موجود!"
+              echo "  سيتم نسخ جميع الملفات من المجلد الرئيسي"
+              shopt -s dotglob
+              for item in ./*; do
+                basename=$(basename "$item")
+                if [ "$basename" != ".git" ] && [ "$basename" != ".github" ] && [ "$basename" != "node_modules" ] && [ "$basename" != "android" ] && [ "$basename" != "ios" ] && [ "$basename" != "www" ] && [ "$basename" != "package.json" ] && [ "$basename" != "package-lock.json" ] && [ "$basename" != "capacitor.config.json" ]; then
+                  echo "  📄 نسخ: $basename"
+                  cp -r "$item" www/ 2>/dev/null || true
+                fi
+              done
+            fi
           fi
           
           # حذف أي ملفات غير مرغوب فيها داخل www
@@ -105,15 +125,32 @@ jobs:
           
           echo ""
           echo "✅ تم نسخ جميع ملفات الموقع"
+          echo ""
           echo "📊 إحصائيات مجلد www:"
           echo "  📁 عدد الملفات: $(find www -type f | wc -l)"
           echo "  📂 عدد المجلدات: $(find www -type d | wc -l)"
           echo "  💾 الحجم الإجمالي: $(du -sh www | cut -f1)"
           echo ""
-          echo "📋 محتويات مجلد www:"
-          find www -type f -not -path '*/\.*' | sort | while read file; do
-            echo "  📄 ${file#www/} ($(du -h "$file" | cut -f1))"
+          echo "📋 محتويات مجلد www بالتفصيل:"
+          echo "================================================"
+          find www -type f | sort | while read file; do
+            size=$(du -h "$file" | cut -f1)
+            echo "  📄 ${file#www/} ($size)"
           done
+          echo "================================================"
+          
+          # التحقق من وجود index.html
+          if [ -f "www/index.html" ]; then
+            echo ""
+            echo "✅ تم العثور على index.html"
+            echo "📝 محتوى أول 5 أسطر من index.html:"
+            head -5 www/index.html
+          else
+            echo ""
+            echo "⚠️ تحذير: لم يتم العثور على index.html!"
+            echo "🔍 البحث عن أي ملف HTML في www:"
+            find www -name "*.html" -type f
+          fi
 
       - name: 📄 إنشاء package.json
         run: |
@@ -311,9 +348,6 @@ jobs:
           if [ -f "$MANIFEST_FILE" ]; then
             echo "📝 جاري تعديل AndroidManifest.xml..."
             
-            # قراءة المحتوى الحالي
-            cat $MANIFEST_FILE
-            
             # إنشاء نسخة احتياطية
             cp $MANIFEST_FILE ${MANIFEST_FILE}.backup
             
@@ -325,6 +359,10 @@ jobs:
             # تعديل وسم application
             sed -i 's|<application|<application android:usesCleartextTraffic="true" android:hardwareAccelerated="true"|' $MANIFEST_FILE
             
+            # عرض المانيفست النهائي
+            echo "📋 محتوى AndroidManifest.xml النهائي:"
+            cat $MANIFEST_FILE
+            
             echo "✅ تم تعديل AndroidManifest.xml"
           else
             echo "❌ ملف AndroidManifest.xml غير موجود!"
@@ -332,7 +370,21 @@ jobs:
           fi
 
       - name: 🔄 مزامنة المشروع
-        run: npx cap sync android
+        run: |
+          echo "🔄 جاري مزامنة الملفات..."
+          npx cap sync android
+          
+          # التحقق من أن الملفات تم نسخها إلى android
+          echo ""
+          echo "📂 التحقق من ملفات assets في android:"
+          if [ -d "android/app/src/main/assets" ]; then
+            echo "📁 محتويات مجلد assets:"
+            find android/app/src/main/assets -type f | head -20
+            echo "  💾 عدد الملفات: $(find android/app/src/main/assets -type f | wc -l)"
+            echo "  💾 الحجم: $(du -sh android/app/src/main/assets | cut -f1)"
+          else
+            echo "⚠️ تحذير: مجلد assets غير موجود!"
+          fi
 
       - name: 🔨 بناء تطبيق APK
         run: |
@@ -353,6 +405,21 @@ jobs:
             find android/app/src/main/res -name "ic_launcher*" -type f | while read icon; do
               echo "  🎨 ${icon#android/app/src/main/res/} ($(du -h "$icon" | cut -f1))"
             done
+            
+            # فحص محتويات APK
+            echo ""
+            echo "🔍 فحص محتويات APK:"
+            unzip -l $APK_PATH | grep -E "assets|index.html" | head -10
+            
+            # التأكد من وجود index.html
+            if unzip -l $APK_PATH | grep -q "assets/public/index.html\|assets/index.html"; then
+              echo ""
+              echo "✅ تم التأكيد: index.html موجود داخل APK ✅"
+            else
+              echo ""
+              echo "⚠️ تحذير: قد لا يكون index.html موجوداً في APK"
+            fi
+            
           else
             echo "❌ فشل بناء APK"
             exit 1
